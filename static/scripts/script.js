@@ -239,7 +239,7 @@ function showSuggestionsAuthor() {
     var users = null;
     // возможно не будет работать при загрузки на сервер
     const files = [
-        "http://127.0.0.1:5000/static/json/users.json"
+        "https://brazen-probable-orchestra.glitch.me/static/json/users.json"
     ];
     Promise.all(files.map(file => fetch(file)))
         .then(responses => Promise.all(responses.map(res => res.json())))
