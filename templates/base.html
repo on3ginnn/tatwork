@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru"> 
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" type="text/css" href="../static/css/style.css">
+
+    <title>
+        ТАТВОРК
+    </title>
+</head>
+<body>
+    <div class="wrapper">
+        <header class="header">
+            <div class="header__body _container">
+                <div class="identificate">
+                    <a class="logo" href="/">
+                        ТАТВОРК
+                    </a>
+                    <nav class="authorization">
+                        <div class="authorization__tool">
+                            {% if current_user.is_authenticated %}
+                            <div class="profile-link profile_dropdown" data-dropdown-toggle="dropdownInformation">
+                                <a class="user" href="/profile">{{ current_user.surname }} {{ current_user.name }}</a>
+                                <div class="avatar">
+                                    {% if current_user.avatar %}
+                                    <img src="../static/img/{{ current_user.avatar }}" alt="avatarErr">
+                                    {% else %}
+                                    <img src="../static/img/avatar.png" alt="avatarErr">
+                                    {% endif %}
+                                </div>
+                            </div>
+
+
+                            {% else %}
+                            <a class="register btn" href="/register">Зарегистрироваться</a>
+                            <a class="login btn" href="/login">Войти</a>
+                            {% endif %}
+                        </div>
+                    </nav>
+                </div>
+                <div class="tools">
+                    <ul class="tools__items items">
+                        {% if current_user.is_authenticated and current_user.status == 'Преподаватель' %}
+                        <li class="item"><a href="/topic">Новая тема</a></li>
+                        <li class="item"><a href="/answers_check">Непроверенные задания</a></li>
+                        <li class="item"><a href="/users_list">Список пользователей</a></li>
+                        {% endif %}
+                        {% if current_user.is_authenticated %}
+                        <li class="item"><a href="/answers_my">Выполненные задания</a></li>
+                        {% endif %}
+
+                        <li class="search">
+                            <form>
+                                <input type="text" id="search-input" oninput="showSuggestions()">
+                                <div id="search-results"></div>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+        <footer></footer>
+    </div>
+    <script type="text/javascript" src="../static/scripts/script.js"></script>
+</body>
+</html>

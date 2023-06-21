@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="task">
+    <div class="task__body _container">
+        <h2>Создание задания</h2>
+        <form method="POST" action="" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <div class="task-content">
+
+                <div class="field">
+                    {{ form.title.label(for="title", class="label") }}
+                    {{ form.title(class="input", id="title", autocomplete="off") }}
+                    {% for error in form.title.errors %}
+                    <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                    </p>
+                    {% endfor %}
+                </div>
+                <h4 class="text-muted">Вопросы:</h4>
+
+                <div class="question-block">
+
+                    <div class="question__item" id="0">
+                        {% for question in form.questions %}
+                            <div class="field">
+                                {{ question.question.label(for="question", class="label") }}
+                                {{ question.question(class="input", id="question", autocomplete="off") }}
+                                {% for error in question.question.errors %}
+                                <p class="alert alert-danger" role="alert">
+                                {{ error }}
+                                </p>
+                                {% endfor %}
+                            </div>
+                            <div class="choices-wrapper">
+                                <div class="choices">
+                                    {% for choice in question.answer_choice %}
+                                    <div class="choice" id="0">
+                                        <div class="field">
+                                            {{ choice.label(for="choice", class="label") }}
+                                            {{ choice(class="input", id="choice", autocomplete="off") }}
+                                            {% for error in choice.errors %}
+                                            <p class="alert alert-danger" role="alert">
+                                            {{ error }}
+                                            </p>
+                                            {% endfor %}
+                                        </div>
+                                        <button type="button" class="btn btn-primary" id="delete_choice_button" onclick="deleteChoice()">Удалить вариант ответа</button>
+
+                                    </div>
+                                {% endfor %}
+                                </div>
+                                <button type="button" class="btn btn-primary" id="add_choice_button" onclick="addChoice()">Добавить вариант ответа</button>                            </div>
+
+                            <div class="field">
+                                {{ question.right_choice.label(for="right_choice", class="label") }}
+                                {{ question.right_choice(class="input", id="right_choice", autocomplete="off") }}
+                                {% for error in question.right_choice.errors %}
+                                <p class="alert alert-danger" role="alert">
+                                {{ error }}
+                                </p>
+                                {% endfor %}
+                            </div>
+                            <button type="button" class="btn" id="delete_quastion_button" onclick="deleteQuestion()">Удалить вопрос</button>
+                        {% endfor %}
+                    </div>
+
+                </div>
+
+                <div class="tests">
+                    {% for test in form.tests %}
+
+                    <div class="field">
+                        {{ test.label(for="test", class="label") }}
+                        {{ test(class="input", id="test", autocomplete="off") }}
+                        {% for error in test.errors %}
+                        <p class="alert alert-danger" role="alert">
+                        {{ error }}
+                        </p>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+
+                </div>
+
+
+                <button type="button" class="btn btn-primary" id="add_test_button">Добавить тест</button>
+                <button type="button" class="btn btn-primary" id="add_question_button">Добавить вопрос</button>
+
+                <div class="field">{{ form.submit(type="submit", class="btn btn_submit") }}</div>
+            </div>
+        </form>
+
+    </div>
+</section>
+
+{% endblock %}

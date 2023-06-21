@@ -1,0 +1,72 @@
+
+{% extends "base.html" %}
+{% block content %}
+<section class="register">
+    <div class="register__body _container">
+        <div class="content">
+            <h2>Регистрация</h2>
+            <form action="" method="post" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                <div class="field">
+                    {{ form.avatar.label(for="avatar", class="label") }}
+                    {{ form.avatar(class="input", id="avatar", autocomplete="off") }}
+                    {% for error in form.avatar.errors %}
+                    <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                    </p>
+                    {% endfor %}
+                </div>
+                <div class="field">
+                    {{ form.name.label(for="name", class="label") }}
+                    {{ form.name(class="input", id="name", autocomplete="off") }}
+                    {% for error in form.name.errors %}
+                    <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                    </p>
+                    {% endfor %}
+                </div>
+                <div class="field">
+                    {{ form.surname.label(for="surname", class="label") }}
+                    {{ form.surname(class="input", id="surname", autocomplete="off") }}
+                    {% for error in form.surname.errors %}
+                    <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                    </p>
+                    {% endfor %}
+                </div>
+                <div class="field">
+                    {{ form.password.label(for="password", class="label") }}
+                    {{ form.password(class="input", id="password") }}
+                    {% for error in form.password.errors %}
+                    <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                    </p>
+                    {% endfor %}
+                </div>
+                <div class="field">
+                    {{ form.password_again.label(for="password_again", class="label") }}
+                    {{ form.password_again(class="input", id="password_again") }}
+                    {% for error in form.password_again.errors %}
+                    <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                    </p>
+                    {% endfor %}
+                </div>
+                <div class="field">
+                    {{ form.group.label(for="group", class="label") }}
+                    {{ form.group(class="input", id="group") }}
+                    {% for error in form.group.errors %}
+                    <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                    </p>
+                    {% endfor %}
+                </div>
+                <div class="field">{{ form.submit(type="submit", class="btn btn_submit") }}</div>
+                <p class="alert alert-danger" role="alert">
+                    {{message}}
+                </p>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

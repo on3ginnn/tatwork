@@ -1,0 +1,55 @@
+
+{% extends "base.html" %}
+{% block content %}
+<section class="topic-edit">
+    <div class="topic-edit__body _container">
+        <h2>{{ topic_mode }}</h2>
+        <form action="" method="post" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <div class="field">
+                {{ form.picture.label(for="picture", class="label") }}
+                {{ form.picture(class="input", id="picture", autocomplete="off") }}
+                {% for error in form.picture.errors %}
+                <p class="alert alert-danger" role="alert">
+                {{ error }}
+                </p>
+                {% endfor %}
+            </div>
+            <div class="field">
+                {{ form.title.label(for="title", class="label") }}
+                {{ form.title(class="input", id="title", autocomplete="off") }}
+                {% for error in form.title.errors %}
+                <p class="alert alert-danger" role="alert">
+                {{ error }}
+                </p>
+                {% endfor %}
+            </div>
+            <div class="field">
+                {{ form.topic_lang.label(for="topic_lang", class="label") }}
+                {{ form.topic_lang(class="input", id="topic_lang", autocomplete="off") }}
+                {% for error in form.topic_lang.errors %}
+                <p class="alert alert-danger" role="alert">
+                {{ error }}
+                </p>
+                {% endfor %}
+            </div>
+            <div class="field">
+                {{ form.author.label(for="search-input-author", class="label") }}
+                {{ form.author(class="input", id="search-input-author", oninput="showSuggestionsAuthor()") }}
+                <div id="search-results-author"></div>
+                {% for error in form.author.errors %}
+                <p class="alert alert-danger" role="alert">
+                {{ error }}
+                </p>
+                {% endfor %}
+            </div>
+
+            <div class="field">{{ form.submit(type="submit", class="btn btn_submit") }}</div>
+            <p class="alert alert-danger" role="alert">
+                {{message}}
+            </p>
+        </form>
+    </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="topic">
+    <div class="topic__body _container">
+        <div class="content">
+            <ul class="items">
+                <li class="item">
+                    <div class="picture">
+                        {% if topic.picture %}
+                        <img src="../static/img/{{ topic.picture }}" alt="pictureErr">
+                        {% else %}
+                        <img src="../static/img/picture.png" alt="pictureErr">
+                        {% endif %}
+                    </div>
+                </li>
+                <li class="item">
+                    <div class="topic-lang">{{ topic.topic_lang }}</div>
+                </li>
+                <li class="item">
+                    <div class="title">{{ topic.title }}</div>
+                </li>
+                <li class="item">
+                    <div class="author">{{ topic.author.name }} {{ topic.author.surname }}</div>
+                </li>
+            </ul>
+            {% if current_user.status == 'Преподаватель' %}
+            <a href="/topic/{{ topic.id }}">Изменить</a>
+            <a href="/topic_delete/{{ topic.id }}">Удалить</a>
+            <a href="/task/{{ topic.id }}">Добавить задание</a>
+            {% endif %}
+
+            <ul class="items">
+                {% for task in tasks %}
+                <li class="item">{{ task.title }}</li>
+                {% if task.id not in user_answers %}
+                <a href="/task_answer/{{ topic.id }}-{{ task.id }}">Выполнить</a>
+
+                {% endif %}
+
+                {% if current_user.status == 'Преподаватель' %}
+                <a href="/task_edit/{{ topic.id }}-{{ task.id }}">Изменить</a>
+                <a href="/task_delete/{{ topic.id }}-{{ task.id }}">Удалить</a>
+                {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</section>
+
+
+{% endblock %}
+

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="users-list">
+    <div class="users-list__body _container">
+        <div class="content">
+            <h2>Преподаватели</h2>
+            <ul class="items teacher-items">
+                {% for teacher in teachers %}
+                <li class="item">
+                    <div class="avatar">
+                        {% if teacher.user.avatar %}
+                        <img src="../static/img/{{ teacher.user.avatar }}" alt="avatarErr">
+                        {% else %}
+                        <img src="../static/img/avatar.png" alt="avatarErr">
+                        {% endif %}
+                    </div>
+                    <a class="user" href="/profile/{{ teacher.user.id }}">{{ teacher.user.name }} {{ teacher.user.surname }}</a>
+                </li>
+
+                {% endfor %}
+            </ul>
+            <h2>Студенты</h2>
+            <ul class="items student-items">
+                {% for student in students %}
+                <li class="item">
+                    <div class="avatar">
+                        {% if student.user.avatar %}
+                        <img src="../static/img/{{ student.user.avatar }}" alt="avatarErr">
+                        {% else %}
+                        <img src="../static/img/avatar.png" alt="avatarErr">
+                        {% endif %}
+                    </div>
+                    <a class="user" href="/profile/{{ student.user.id }}">{{ student.user.name }} {{ student.user.surname }}</a>
+                </li>
+
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+

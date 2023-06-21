@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="answers-check">
+    <div class="answers-check__body _container">
+        <div class="content">
+            <ul class="items">
+                {% for answer in answers if answer.status != "Зачтено" %}
+                <li class="item">
+                    {{ answer.score }}
+
+                    {{ answer.task.title }}
+                    {{ answer.status }}
+                    {{ answer.user.name }} {{ answer.user.surname }}
+                    {{ answer.modified_date }}
+                    {% if answer.user == current_user %}
+                    <a href="/answer_edit/{{ answer.id }}">Изменить</a>
+                    {% endif %}
+                    <a href="/answer_verif/{{ answer.id }}">Отметить как проверенное</a>
+                    <a href="/answer_delete/{{ answer.id }}">Удалить</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</section>
+
+
+{% endblock %}
+

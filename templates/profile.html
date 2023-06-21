@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="profile">
+    <div class="profile__body _container">
+        <div class="content">
+            <ul class="items">
+                <li class="item">
+                    <div class="avatar">
+                        {% if user.avatar %}
+                        <img src="../static/img/{{ user.avatar }}" alt="avatarErr">
+                        {% else %}
+                        <img src="../static/img/avatar.png" alt="avatarErr">
+                        {% endif %}
+                    </div>
+                </li>
+                <li class="item">
+                    <div class="id">{{ user.id }}</div>
+                </li>
+                <li class="item">
+                    <div class="name">{{ user.name }}</div>
+                    <div class="surname">{{ user.surname }} </div>
+                </li>
+                <li class="item">
+                    <div class="status">
+                        {% if user.status == 'Студент' %}
+                        <div class="status__value">
+                            Студент
+                        </div>
+                        <div class="group">
+                            {{ user.student[0].group }}
+                        </div>
+                        {% else %}
+                        <div class="status__value">
+                            Преподаватель
+                        </div>
+                        {% endif %}
+                    </div>
+                </li>
+            </ul>
+            {% if user == current_user %}
+            <a class="btn" href="/logout">Выйти</a>
+
+            {% endif %}
+
+            {% if user.id == current_user.id or current_user.status == 'Преподаватель' %}
+            <a class="btn" href="/profile_edit/{{ user.id }}">Изменить</a>
+            <a class="btn" href="/profile_delete/{{ user.id }}">Удалить аккаунт</a>
+            {% endif %}
+            <ul class="items task-items verif">
+                {% for answer in user.answer if answer.status == "Зачтено" %}
+                <li class="item task__item">
+                    {{ answer.score }}
+
+                    {{ answer.task.title }}
+                    {{ answer.status }}
+                    {{ answer.user.name }} {{ answer.user.surname }}
+                    {{ answer.modified_date }}
+                </li>
+                {% endfor %}
+            </ul>
+            <ul class="items task-items">
+                {% for answer in user.answer if answer.status != "Зачтено" %}
+                <li class="item task__item">
+                    {{ answer.score }}
+
+                    {{ answer.task.title }}
+                    {{ answer.status }}
+                    {{ answer.user.name }} {{ answer.user.surname }}
+                    {{ answer.modified_date }}
+                    {% if answer.user == current_user %}
+                    <a href="/answer_edit/{{ answer.id }}">Изменить</a>
+                    {% endif %}
+                    {% if current_user.status == 'Преподаватель' %}
+
+                    <a href="/answer_verif/{{ answer.id }}">Отметить как проверенное</a>
+                    {% endif %}
+
+                </li>
+                {% endfor %}
+                
+            </ul>
+        </div>
+    </div>
+</section>
+
+
+{% endblock %}
+

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="task-edit">
+    <div class="task-edit__body _container">
+        <h2>Редактирование задания</h2>
+        <form method="POST" action="" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <div class="task-content">
+                <div class="field">
+                    <label class="label" for="title">Название задания</label>
+                    <input autocomplete="off" class="input" id="title" name="title" required="" type="text" value="{{ task.title }}">
+                </div>
+                <h4 class="text-muted">Вопросы:</h4>
+
+                <div class="question-block">
+                    {% for item in questions %}
+                    {% set item_num = loop.index0 %}
+                    <div class="question__item" id="{{ item_num }}">
+                        <div class="field">
+                            <label class="label" for="question">Вопрос</label>
+                            <input autocomplete="off" class="input" id="question" name="questions-{{ item_num }}-question" required="" type="text" value="{{ item['question'] }}">
+                        </div>
+                        <div class="choices-wrapper">
+                            <div class="choices">
+                                {% for choice in item.answer_choice %}
+                                <div class="choice" id="{{ loop.index0 }}">
+                                    <div class="field">
+                                        <label class="label" for="choice">Варианты ответа</label>
+                                        <input autocomplete="off" class="input" id="choice" name="questions-{{ item_num }}-answer_choice-{{ loop.index0 }}" required="" type="text" value="{{ choice }}">
+                                        
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="delete_choice_button" onclick="deleteChoice()">Удалить вариант ответа</button>
+
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <button type="button" class="btn btn-primary" id="add_choice_button" onclick="addChoice()">Добавить вариант ответа</button>
+                        </div>
+
+                        <div class="field">
+                            <label class="label" for="right_choice">Правильный ответ</label>
+                            <input autocomplete="off" class="input" id="right_choice" name="questions-{{ item_num }}-right_choice" required="" type="text" value="{{ item['right_choice'] }}">
+                            
+                        </div>
+                        <button type="button" class="btn" id="delete_quastion_button" onclick="deleteQuestion()">Удалить вопрос</button>
+                    </div>
+                    {% endfor %}
+
+                </div>
+
+
+                <button type="button" class="btn btn-primary" id="add_test_button">Добавить тест</button>
+                <button type="button" class="btn btn-primary" id="add_question_button">Добавить вопрос</button>
+
+                <div class="field"><input class="btn btn_submit" id="submit" name="submit" type="submit" value="Сохранить задание"></div>
+            </div>
+        </form>
+
+    </div>
+</section>
+
+{% endblock %}

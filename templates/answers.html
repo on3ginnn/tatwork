@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="answers">
+    <div class="answers__body _container">
+        <h2>{{ task.title }}</h2>
+        <form method="POST" action="" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+
+            <div class="answers-content">
+                <ul class="items">
+                    {% for question in questions %}
+                    {% set question_num = loop.index0 %}
+                    {{ question_num }} / {{ loop.index0 }}
+                    <li class="item">
+                        <div class="question__text">
+                            {{ question['question'] }}
+                        </div>
+                        <div class="form-check">
+                            <ul id="test_answers-4">
+
+                                {% for choice in question['answer_choice'] %}
+                                <li>
+                                    <input id="test_answers-{{ question_num }}-{{ loop.index0 }}" name="test_answers-{{ question_num }}" required="" type="radio" value="{{ choice }}">
+                                    <label for="test_answers-{{ question_num }}-{{ loop.index0 }}">{{ choice }}</label>
+                                </li>
+                                {% endfor %}
+
+                            </ul>
+                        </div>
+                    </li>
+                    {% endfor %}
+
+                </ul>
+            </div>
+            <div class="field">{{ form.submit(type="submit", class="btn btn_submit") }}</div>
+
+        </form>
+
+    </div>
+</section>
+{% endblock %}

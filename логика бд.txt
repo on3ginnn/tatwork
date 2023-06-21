@@ -1,0 +1,95 @@
+class User(SqlAlchemyBase, UserMixin, SerializerMixin):
+    __tablename__ = 'users'
+
+    id = sqlalchemy.Column(sqlalchemy.Integer,
+                           primary_key=True, autoincrement=True)
+    surname = Column(String, nullable=False)
+    name = Column(String, nullable=False)
+    status = Column(String, nullable=False, default='cтудент') # возможные записи "преподаватель" или "cтудент"
+    hashed_password = Column(String, nullable=False)
+    avatar = Column(String, nullable=True, default=None)
+
+    student = relationship("Student", backref="user")
+    teacher = relationship("Teacher", backref="user")
+    topic = relationship("Topic", backref="user")
+    answer = relationship("Answers", backref="user")
+    # - В таблице "User" создается отношение One-to-One между "Student" и "Teacher" таблицами
+    # с помощью `relationship("Student", backref="user")` и `relationship("Teacher", backref="user")`.
+
+    def set_password(self, password):
+        self.hashed_password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.hashed_password, password)
+
+class Teacher(SqlAlchemyBase, SerializerMixin):
+    __tablename__ = 'teachers'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+
+class Student(SqlAlchemyBase, SerializerMixin):
+    __tablename__ = 'students'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    group = Column(String, nullable=False, default='ИС-221')
+
+class Topic(SqlAlchemyBase, SerializerMixin):
+    __tablename__ = 'topics'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+
+    title = Column(String, nullable=False)
+    created_date = Column(DateTime, default=datetime.datetime.now)
+    user_id = Column(Integer, ForeignKey('users.id')) # автор
+    topic_lang = Column(String, nullable=False) # возможные записи "РУС", "ТАТ", "КИНО"
+
+    task = relationship("Task", backref="topic")
+
+class Task(SqlAlchemyBase, SerializerMixin):
+    __tablename__ = 'tasks'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    topic_id = Column(Integer, ForeignKey('topics.id'))
+    title = Column(String, nullable=False)
+    task_type = Column(String, nullable=False, default='ТЕСТ') # возможные записи "Кросс-ворд", "соотнести слова", "хронология", "тест"
+
+    question = relationship("Questions", backref="task")
+    answer = relationship("Answers", backref="task")
+
+
+# - В таблице "Task" создается отношение Many-to-One между "Task" и "Topic" таблицами с помощью `Column(Integer, ForeignKey('topics.id'))` и `relationship("Task", backref="topic")`.
+
+class Questions(SqlAlchemyBase, SerializerMixin):
+    __tablename__ = 'questions'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    task_id = Column(Integer, ForeignKey('tasks.id'))
+    question_items = Column(JSON, nullable=False) # задание состоит из нескольких вопросов, поэтому JSON
+    right_answers_items = Column(JSON, nullable=False)
+
+# - В таблице "Questions" создается отношение Many-to-One между "Questions" и "Task" таблицами 
+# с помощью `Column(Integer, ForeignKey('tasks.id'))` и `relationship("Questions", backref="task")`.
+
+class Answers(SqlAlchemyBase, SerializerMixin):
+    __tablename__ = 'answers'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    task_id = Column(Integer, ForeignKey('tasks.id'))
+    answers_items = Column(JSON, nullable=False) # задание состоит из нескольких вопросов, поэтому и ответов несколько, все хранится в JSON
+    modified_date = Column(DateTime, default=datetime.datetime.now)
+    status = Column(String, nullable=False, default="Не пройдено") # возможные записи "Не пройдено", "Зачтено", это статус задания, выполнил его пользователь или нет
+
+# - В таблице "Answers" создается отношение Many-to-One между "Answers" и "User" таблицами
+# с помощью Column(Integer, ForeignKey('users.id')) и relationship("Answers", backref="user"),
+# а также отношение Many-to-One между "Answers" и "Task" таблицами с помощью Column(Integer, ForeignKey('tasks.id'))
+# и relationship("Answers", backref="task").
+
+
+Суть приложения: есть некий веб-ресурс, на котором могут регистрироваться пользователи(студенты и их преподаватели). 
+Преподаватели могут загружать темы(таблица Topic), указывая автора этой темы(он может быть как учителем, так и преподавателем.
+В каждой теме могут быть несколько заданий(таблица Task), в каждом задании могут быть некоторое кол-во вопросов, 
+причем задания могут быть разных типов(возможные записи "Кросс-ворд", "соотнести слова", "хронология", "тест").
+Пользователь проходит эти задания(причем проходить может как студент так и преподаватель), и его ответы сохраняются в таблице Answers.

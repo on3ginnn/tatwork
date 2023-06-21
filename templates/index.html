@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ru">
+    <head> 
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+        <link rel="stylesheet" type="text/css" href="../static/css/style.css">
+        <title>
+            ТАТВОРК
+        </title>
+    </head>
+    <body>
+        <div class="wrapper">
+            <header>
+
+            </header>
+            <main>
+                {% extends "base.html" %}
+
+                {% block content %}
+                <section class="page">
+                    <div class="page__body _container">
+                        <div class="content">
+                            <ul class="topics">
+                                <!-- все темы -->
+                                {% for item in topics %}
+                                <li class="topic">
+                                    {{ item.title }}
+                                    {{ item.author.name }}
+                                    <a href="/topic_view/{{ item.id }}">Перейти</a>
+                                    {% if current_user.status == 'Преподаватель' %}
+                                    <a href="/topic/{{ item.id }}">Изменить</a>
+                                    <a href="/topic_delete/{{ item.id }}">Удалить</a>
+                                    {% endif %}
+                                </li>
+    
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+                {% endblock %}
+            </main>
+            <footer>
+
+            </footer>
+        </div>
+    </body>
+</html>
