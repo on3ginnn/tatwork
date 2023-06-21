@@ -164,8 +164,8 @@ function showSuggestions() {
     var topics = null;
     // возможно не будет работать при загрузки на сервер
     const files = [
-        "http://127.0.0.1:5000/static/json/users.json",
-        "http://127.0.0.1:5000/static/json/topics.json"
+        "https://brazen-probable-orchestra.glitch.me/static/json/users.json",
+        "https://brazen-probable-orchestra.glitch.me/static/json/topics.json"
     ];
         
     Promise.all(files.map(file => fetch(file)))
