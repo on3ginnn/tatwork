@@ -164,8 +164,8 @@ function showSuggestions() {
     var topics = null;
     // возможно не будет работать при загрузки на сервер
     const files = [
-        "https://brazen-probable-orchestra.glitch.me/static/json/users.json",
-        "https://brazen-probable-orchestra.glitch.me/static/json/topics.json"
+        "https://eager-beautiful-printer.glitch.me/static/json/users.json",
+        "https://eager-beautiful-printer.glitch.me/static/json/topics.json"
     ];
 
 
@@ -240,7 +240,7 @@ function showSuggestionsAuthor() {
     var users = null;
     // возможно не будет работать при загрузки на сервер
     const files = [
-        "https://brazen-probable-orchestra.glitch.me/static/json/users.json"
+        "https://eager-beautiful-printer.glitch.me/static/json/users.json"
     ];
     Promise.all(files.map(file => fetch(file)))
         .then(responses => Promise.all(responses.map(res => res.json())))
