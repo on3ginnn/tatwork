@@ -4,22 +4,25 @@
 <section class="login">
     <div class="login__body _container">
         <div class="content">
-            <h2>Вход</h2>
+            <div class="navigation-bar">
+                <h2>Вход</h2>
+            </div>
             <form action="" method="post" enctype="multipart/form-data">
                 {{ form.hidden_tag() }}
+
                 <div class="field">
-                    {{ form.name.label(for="name", class="label") }}
-                    {{ form.name(class="input", id="name", autocomplete="off") }}
-                    {% for error in form.name.errors %}
+                    {{ form.surname.label(for="surname", class="label") }}
+                    {{ form.surname(class="input", id="surname", autocomplete="off") }}
+                    {% for error in form.surname.errors %}
                     <p class="alert alert-danger" role="alert">
                     {{ error }}
                     </p>
                     {% endfor %}
                 </div>
                 <div class="field">
-                    {{ form.surname.label(for="surname", class="label") }}
-                    {{ form.surname(class="input", id="surname", autocomplete="off") }}
-                    {% for error in form.surname.errors %}
+                    {{ form.name.label(for="name", class="label") }}
+                    {{ form.name(class="input", id="name", autocomplete="off") }}
+                    {% for error in form.name.errors %}
                     <p class="alert alert-danger" role="alert">
                     {{ error }}
                     </p>
@@ -34,7 +37,11 @@
                     </p>
                     {% endfor %}
                 </div>
-                <div class="field">{{ form.submit(type="submit", class="btn btn_submit") }}</div>
+                <div class="field">
+                    <div class="btn-submit">
+                        {{ form.submit(type="submit", class="btn btn_submit") }}
+                    </div>
+                </div>
                 <p class="alert alert-danger" role="alert">
                     {{message}}
                 </p>

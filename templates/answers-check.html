@@ -3,23 +3,75 @@
 <section class="answers-check">
     <div class="answers-check__body _container">
         <div class="content">
-            <ul class="items">
-                {% for answer in answers if answer.status != "Зачтено" %}
-                <li class="item">
-                    {{ answer.score }}
-
-                    {{ answer.task.title }}
-                    {{ answer.status }}
-                    {{ answer.user.name }} {{ answer.user.surname }}
-                    {{ answer.modified_date }}
-                    {% if answer.user == current_user %}
-                    <a href="/answer_edit/{{ answer.id }}">Изменить</a>
-                    {% endif %}
-                    <a href="/answer_verif/{{ answer.id }}">Отметить как проверенное</a>
-                    <a href="/answer_delete/{{ answer.id }}">Удалить</a>
+            <div class="navigation-bar">
+                <h2>Ответы на проверку</h2>
+            </div>
+            {% if answers %}
+            <ul class="items applications task-items">
+                {% for answer in answers[::-1] if answer.status != "проверено" %}
+                <li class="item application task__item">
+                    <div class="application_btns">
+                        <div class="application__wrapper">
+                            <div class="application__pictures">
+                                {% if answer.task.topic.picture %}
+                                <img src="../static/img/{{ answer.task.topic.picture }}" alt="picturesErr">
+                                {% else %}
+                                <img src="../static/img/defpicture.png" alt="picturesErr">
+                                {% endif %}
+                            </div>
+                            <div class="application__info">
+                                <div class="application__info-titles">
+                                    <div class="application__title">
+                                        {{ answer.task.topic.title }}
+                                    </div>
+                                    <div class="application__subtitle">
+                                        Задание: {{ answer.task.title }}
+                                    </div>
+                                </div>
+                                <div class="wrapper-time-name">
+                                    <div class="application__info-time time">
+                                        <span class="icon"><img src="../static/img/time.svg" alt="timeErr"></span>
+                                        <div class="time-data">
+                                            {{ answer.modified_date }}
+                                        </div>
+                                    </div>
+                                    <div class="names">
+                                        <a class="user-link" href="/profile/{{ answer.user.id }}">{{ answer.user.name }} {{ answer.user.surname }}</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="application__status">
+                                <div class="app-status">
+                                    {{ answer.status }}
+                                </div>
+                                <div class="app-result">
+                                    {{ answer.score }}
+                                </div>
+                            </div>
+                        </div>
+                        {% if current_user.status == 'Преподаватель' %}
+                        <div class="app-btns">
+                            <div class="app-btn delete_btn">
+                                <a class="btn" href="/answer_delete/{{ answer.id }}">Отклонить</a>
+                            </div>
+                            <div class="app-btn approve_btn">
+                                <a class="btn" href="/answer_verif/{{ answer.id }}">Засчитать</a>                        
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
                 </li>
                 {% endfor %}
             </ul>
+            {% else %}
+            <div class="empty-wrapper">
+                <div class="empty__content">
+                    <div class="empty">
+                        Здесь ничего нет
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </section>

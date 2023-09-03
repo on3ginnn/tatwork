@@ -11,4 +11,4 @@ class TestAnswersForm(FlaskForm):
                                                            ('Вариант ответа 4', 'Вариант ответа 4')],
                                         validators=[DataRequired()]), min_entries=0)
 
-    submit = SubmitField('Готово')
+    submit = SubmitField('Сохранить')

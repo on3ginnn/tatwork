@@ -12,8 +12,8 @@ class Topic(SqlAlchemyBase, SerializerMixin):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String, nullable=False)
-    created_date = Column(DateTime, default=datetime.datetime.now)
-    author_id = Column(Integer, ForeignKey('users.id'), nullable=True) # автор
+    created_date = Column(String, default=datetime.datetime.now().strftime('%H:%M %d-%m-%Y'))
+    author = Column(String, nullable=False) # автор
     topic_lang = Column(String, nullable=False) # список РУС, ТАТ, КИНО
     picture = Column(String, nullable=True, default=None)
 

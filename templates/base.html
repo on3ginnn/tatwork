@@ -3,6 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="../static/css/style.css">
 
     <title>
@@ -11,52 +14,93 @@
 </head>
 <body>
     <div class="wrapper">
-        <header class="header">
-            <div class="header__body _container">
-                <div class="identificate">
-                    <a class="logo" href="/">
-                        ТАТВОРК
-                    </a>
-                    <nav class="authorization">
-                        <div class="authorization__tool">
-                            {% if current_user.is_authenticated %}
-                            <div class="profile-link profile_dropdown" data-dropdown-toggle="dropdownInformation">
-                                <a class="user" href="/profile">{{ current_user.surname }} {{ current_user.name }}</a>
-                                <div class="avatar">
-                                    {% if current_user.avatar %}
-                                    <img src="../static/img/{{ current_user.avatar }}" alt="avatarErr">
-                                    {% else %}
-                                    <img src="../static/img/avatar.png" alt="avatarErr">
-                                    {% endif %}
+        <header class="header"> 
+            <div class="header__body">
+                <div class="_container">
+                    <div class="identificate">
+                        <a class="logo" href="/">
+                            ТАТ<span class="red">ВОРК</span>
+                        </a>
+                        <li class="search">
+                            <form action="/searсh_to" method="post" enctype="multipart/form-data">
+
+                                <input type="text" name="searchField" id="search-input" placeholder="Поиск..." autocomplete="off">
+                                <div class="search-icon__wrapper">
+                                    <button type="submit" name="submit" class="search-icon">
+                                        <img src="../static/img/search.svg" alt="searchErr">
+                                    </button>
+                                </div>
+                            </form>
+                            <div class='search-results' id="search-results">
+                                <div class="search-results__wrapper">
+                                    <div class="search-results__users">
+                                        <div class="label">
+                                            ЛЮДИ
+                                        </div>
+                                        <div id="search-results__users-wrapper">
+                                        </div>
+                                    </div>
+                                    <div class="search-results__topics">
+                                        <div class="label">
+                                            ТЕМЫ
+                                        </div>
+                                        <div id="search-results__topics-wrapper"></div>
+                                    </div>
                                 </div>
                             </div>
-
-
-                            {% else %}
-                            <a class="register btn" href="/register">Зарегистрироваться</a>
-                            <a class="login btn" href="/login">Войти</a>
-                            {% endif %}
-                        </div>
-                    </nav>
-                </div>
-                <div class="tools">
-                    <ul class="tools__items items">
-                        {% if current_user.is_authenticated and current_user.status == 'Преподаватель' %}
-                        <li class="item"><a href="/topic">Новая тема</a></li>
-                        <li class="item"><a href="/answers_check">Непроверенные задания</a></li>
-                        <li class="item"><a href="/users_list">Список пользователей</a></li>
-                        {% endif %}
-                        {% if current_user.is_authenticated %}
-                        <li class="item"><a href="/answers_my">Выполненные задания</a></li>
-                        {% endif %}
-
-                        <li class="search">
-                            <form>
-                                <input type="text" id="search-input" oninput="showSuggestions()">
-                                <div id="search-results"></div>
-                            </form>
+                            <div class="search_blur" id="search_blur"></div>
                         </li>
-                    </ul>
+                        <nav class="authorization">
+                            <div class="authorization__tool">
+                                {% if current_user.is_authenticated %}
+                                <a href="/profile" class="profile-link profile_dropdown" data-dropdown-toggle="dropdownInformation">
+                                    <div class="user-info">
+                                        <div class="user">{{ current_user.surname }} {{ current_user.name }}</div>
+                                        <div class="status">
+                                            {% if current_user.status == 'Студент' %}
+                                            <div class="group user_status">
+                                                {{ current_user.student[0].group }}
+                                            </div>
+                                            {% else %}
+                                            <div class="status__value user_status">
+                                                Преподаватель
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        
+                                    </div>
+                                    <div class="avatar">
+                                        {% if current_user.avatar %}
+                                        <img src="../static/img/{{ current_user.avatar }}" alt="avatarErr">
+                                        {% else %}
+                                        <img src="../static/img/avatar.png" alt="avatarErr">
+                                        {% endif %}
+                                    </div>
+                                </a>
+    
+    
+                                {% else %}
+                                <div class="register-buttons">
+                                    <a class="register__btn btn" href="/register">Зарегистрироваться</a>
+                                    <a class="login__btn btn" href="/login">Войти</a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </nav>
+                    </div>
+                    <div class="tools">
+                        <ul class="tools__items items">
+                            {% if current_user.is_authenticated %}
+                            <li class="item"><a class="btn" href="/">Темы</a></li>
+                            <li class="item"><a class="btn" href="/answers_my">Мои ответы</a></li>
+                            {% endif %}
+                            {% if current_user.is_authenticated and current_user.status == 'Преподаватель' %}
+                            <li class="item"><a class="btn" href="/topic">Новая тема</a></li>
+                            <li class="item"><a class="btn" href="/answers_check">На проверке</a></li>
+                            <li class="item"><a class="btn" href="/users_list">Пользователи</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
                 </div>
             </div>
         </header>

@@ -4,17 +4,28 @@
 <section class="profile-edit">
     <div class="profile-edit__body _container">
         <div class="content">
-            <h2>Редактирование аккаунта</h2>
+            <div class="navigation-bar">
+                <h2>Редактирование профиля</h2>
+            </div>
             <form action="" method="post" enctype="multipart/form-data">
                 {{ form.hidden_tag() }}
-                <div class="field">
+                <div class="field avatar_field">
                     {{ form.avatar.label(for="avatar", class="label") }}
-                    {{ form.avatar(class="input", id="avatar", autocomplete="off") }}
+
+                    <div class="avatar-container">
+                        {% if user.avatar %}
+                        <img src="{{ url_for('static', filename='img/' + user.avatar) }}" alt="" class="avatar_preview">
+                        {% else %}
+                        <img src="{{ url_for('static', filename='img/avatar.png') }}" alt="" class="avatar_preview">
+                        {% endif %}
+                    </div>
+                    {{ form.avatar(class="input", id="avatar", autocomplete="off", onchange="showAvatar(this)", type="file", value="Загрузить фото") }}
                     {% for error in form.avatar.errors %}
                     <p class="alert alert-danger" role="alert">
                     {{ error }}
                     </p>
                     {% endfor %}
+
                 </div>
                 <div class="field">
                     {{ form.name.label(for="name", class="label") }}
@@ -54,7 +65,11 @@
                     {% endfor %}
                 </div>
                 {% endif %}
-                <div class="field">{{ form.submit(type="submit", class="btn btn_submit") }}</div>
+                <div class="field">
+                    <div class="btn-submit">
+                        {{ form.submit(type="submit", class="btn btn_submit") }}
+                    </div>
+                </div>
                 <p class="alert alert-danger" role="alert">
                     {{message}}
                 </p>

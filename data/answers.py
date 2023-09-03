@@ -11,9 +11,9 @@ class Answers(SqlAlchemyBase, SerializerMixin):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('users.id'))
     task_id = Column(Integer, ForeignKey('tasks.id'))
-    modified_date = Column(DateTime, default=datetime.datetime.now)
+    modified_date = Column(String, default=datetime.datetime.now().strftime('%H:%M %d.%m.%Y'))
     answers = Column(JSON, nullable=False)
-    status = Column(String, nullable=False, default="Не пройдено") # Не пройдено, Зачтено
+    status = Column(String, nullable=False, default="на проверке") # Не пройдено, Зачтено
     score = Column(String, nullable=False)
 
 

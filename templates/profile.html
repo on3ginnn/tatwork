@@ -3,82 +3,203 @@
 <section class="profile">
     <div class="profile__body _container">
         <div class="content">
-            <ul class="items">
-                <li class="item">
-                    <div class="avatar">
+            <div class="navigation-bar">
+                <h2>Профиль</h2>
+            </div>
+
+            <div class="panel">
+                <div class="panel__img">
+                    <div class="picture panel_img">
                         {% if user.avatar %}
-                        <img src="../static/img/{{ user.avatar }}" alt="avatarErr">
+                        <img src="../static/img/{{ user.avatar }}" alt="avatar">
                         {% else %}
                         <img src="../static/img/avatar.png" alt="avatarErr">
                         {% endif %}
                     </div>
-                </li>
-                <li class="item">
-                    <div class="id">{{ user.id }}</div>
-                </li>
-                <li class="item">
-                    <div class="name">{{ user.name }}</div>
-                    <div class="surname">{{ user.surname }} </div>
-                </li>
-                <li class="item">
-                    <div class="status">
-                        {% if user.status == 'Студент' %}
-                        <div class="status__value">
-                            Студент
+
+                </div>
+                <div class="panel__profile panel_content">
+                    <div class="profile-data panel_data">
+                        <ul class="profile-items items panel_items">
+                            <li class="profile__items item panel_item">
+                                <div class="label">
+                                    ФАМИЛИЯ
+                                </div>
+                                <div class="item__data">
+                                    <div class="surname">{{ user.surname }}</div>
+                                </div>
+                            </li>
+                            <li class="profile__items item panel_item">
+                                <div class="label">
+                                    ИМЯ
+                                </div>
+                                <div class="item__data">
+                                    <div class="name">{{ user.name }}</div>
+                                </div>
+                            </li>
+                            <li class="profile__items item panel_item">
+                                <div class="label">
+                                    СТАТУС
+                                </div>
+                                <div class="item__data">
+                                    <div class="status">
+                                        {% if user.status == 'Студент' %}
+                                        <div class="status__value">
+                                            Студент
+                                        </div>
+                                        {% else %}
+                                        <div class="status__value">
+                                            Преподаватель
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </li>
+                            {% if user.status == 'Студент' %}
+                            <li class="profile__items item panel_item">
+                                <div class="label">
+                                    ГРУППА
+                                </div>
+                                <div class="item__data">
+                                    <div class="group">
+                                            {{ user.student[0].group }}
+                                    </div>
+                                </div>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    <div class="profile-tools panel_tools">
+                        <div class="tools__edit edit_btn">
+                            {% if user.id == current_user.id or current_user.status == 'Преподаватель' %}
+                            <a class="btn tools_btn" href="/profile_edit/{{ user.id }}">Изменить</a>
+                            {% endif %}
                         </div>
-                        <div class="group">
-                            {{ user.student[0].group }}
+                        <div class="tools__delete delete_btn">
+                            {% if user.id == current_user.id or current_user.status == 'Преподаватель' %}
+                            <a class="btn tools_btn" href="/profile_delete/{{ user.id }}">Удалить</a>
+
+                            {% endif %}
                         </div>
-                        {% else %}
-                        <div class="status__value">
-                            Преподаватель
+                        <div class="logout-wrapper">
+                            <div class="tools__logout">
+                                {% if user == current_user %}
+                                <a class="btn tools_btn" href="/logout">Выйти</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation-bar">
+                <h3>Выполненные задания</h3>
+            </div>
+            {% if user.answer %}
+            <ul class="items applications task-items">
+                {% for answer in user.answer[::-1] if answer.status != "проверено" %}
+                <li class="item application task__item">
+                    <div class="application_btns">
+                        <div class="application__wrapper">
+                            <div class="application__pictures">
+                                {% if answer.task.topic.picture %}
+                                <img src="../static/img/{{ answer.task.topic.picture }}" alt="picturesErr">
+                                {% else %}
+                                <img src="../static/img/defpicture.png" alt="picturesErr">
+                                {% endif %}
+                            </div>
+                            <div class="application__info">
+                                <div class="application__info-titles">
+                                    <div class="application__title">
+                                        {{ answer.task.topic.title }}
+                                    </div>
+                                    <div class="application__subtitle">
+                                        Задание: {{ answer.task.title }}
+                                    </div>
+                                </div>
+                                <div class="application__info-time time">
+                                    <span class="icon"><img src="../static/img/time.svg" alt="timeErr"></span>
+                                    <div class="time-data">
+                                        {{ answer.modified_date }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="application__status">
+                                <div class="app-status">
+                                    {{ answer.status }}
+                                </div>
+                                <div class="app-result">
+                                    {{ answer.score }}
+                                </div>
+                            </div>
+                        </div>
+                        {% if current_user.status == 'Преподаватель' %}
+                        <div class="app-btns">
+                            <div class="app-btn delete_btn">
+                                <a class="btn" href="/answer_delete/{{ answer.id }}">Отклонить</a>
+                            </div>
+                            <div class="app-btn approve_btn">
+                                <a class="btn" href="/answer_verif/{{ answer.id }}">Засчитать</a>                        
+                            </div>
                         </div>
                         {% endif %}
+
                     </div>
                 </li>
+                {% endfor %}
             </ul>
-            {% if user == current_user %}
-            <a class="btn" href="/logout">Выйти</a>
 
-            {% endif %}
-
-            {% if user.id == current_user.id or current_user.status == 'Преподаватель' %}
-            <a class="btn" href="/profile_edit/{{ user.id }}">Изменить</a>
-            <a class="btn" href="/profile_delete/{{ user.id }}">Удалить аккаунт</a>
-            {% endif %}
-            <ul class="items task-items verif">
-                {% for answer in user.answer if answer.status == "Зачтено" %}
-                <li class="item task__item">
-                    {{ answer.score }}
-
-                    {{ answer.task.title }}
-                    {{ answer.status }}
-                    {{ answer.user.name }} {{ answer.user.surname }}
-                    {{ answer.modified_date }}
+            <ul class="items applications task-items">
+                {% for answer in user.answer[::-1] if answer.status == "проверено" %}
+                <li class="item application task__item">
+                    <div class="application_btns">
+                        <div class="application__wrapper">
+                            <div class="application__pictures">
+                                {% if answer.task.topic.picture %}
+                                <img src="../static/img/{{ answer.task.topic.picture }}" alt="picturesErr">
+                                {% else %}
+                                <img src="../static/img/defpicture.png" alt="picturesErr">
+                                {% endif %}
+                            </div>
+                            <div class="application__info">
+                                <div class="application__info-titles">
+                                    <div class="application__title">
+                                        {{ answer.task.topic.title }}
+                                    </div>
+                                    <div class="application__subtitle">
+                                        Задание: {{ answer.task.title }}
+                                    </div>
+                                </div>
+                                <div class="application__info-time time">
+                                    <span class="icon"><img src="../static/img/time.svg" alt="timeErr"></span>
+                                    <div class="time-data">
+                                        {{ answer.modified_date }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="application__status approve_app">
+                                <div class="app-status__wrapper">
+                                    <div class="app-status">
+                                        {{ answer.status }}
+                                    </div>
+                                </div>
+                                <div class="app-result approve_app">
+                                    {{ answer.score }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </li>
                 {% endfor %}
             </ul>
-            <ul class="items task-items">
-                {% for answer in user.answer if answer.status != "Зачтено" %}
-                <li class="item task__item">
-                    {{ answer.score }}
-
-                    {{ answer.task.title }}
-                    {{ answer.status }}
-                    {{ answer.user.name }} {{ answer.user.surname }}
-                    {{ answer.modified_date }}
-                    {% if answer.user == current_user %}
-                    <a href="/answer_edit/{{ answer.id }}">Изменить</a>
-                    {% endif %}
-                    {% if current_user.status == 'Преподаватель' %}
-
-                    <a href="/answer_verif/{{ answer.id }}">Отметить как проверенное</a>
-                    {% endif %}
-
-                </li>
-                {% endfor %}
-                
-            </ul>
+            {% else %}
+            <div class="empty-wrapper">
+                <div class="empty__content">
+                    <div class="empty">
+                        Здесь ничего нет
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </section>

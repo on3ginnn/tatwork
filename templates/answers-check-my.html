@@ -3,22 +3,115 @@
 <section class="answers-check">
     <div class="answers-check__body _container">
         <div class="content">
-            <ul class="items">
-                {% for answer in answers %}
-                <li class="item">
-                    {{ answer.task.title }}
-                    {{ answer.status }}
-                    {{ answer.user.name }} {{ answer.user.surname }}
-                    {{ answer.modified_date }}
-                    {% if answer.status == 'Зачтено' %}
-                    {{ answer.score }}
-                    {% else %}
-                    <a href="/answer_edit/{{ answer.id }}">Изменить</a>
-                    {% endif %}
-                </li>
+            <div class="navigation-bar">
+                <h2>Ваши ответы</h2>
+            </div>
+            {% if answers %}
+            <ul class="items applications task-items">
+                {% for answer in answers[::-1] if answer.status != "проверено" %}
+                <li class="item application task__item">
+                    <div class="application_btns">
+                        <div class="application__wrapper">
+                            <div class="application__pictures">
+                                {% if answer.task.topic.picture %}
+                                <img src="../static/img/{{ answer.task.topic.picture }}" alt="picturesErr">
+                                {% else %}
+                                <img src="../static/img/defpicture.png" alt="picturesErr">
+                                {% endif %}
+                            </div>
+                            <div class="application__info">
+                                <div class="application__info-titles">
+                                    <div class="application__title">
+                                        {{ answer.task.topic.title }}
+                                    </div>
+                                    <div class="application__subtitle">
+                                        Задание: {{ answer.task.title }}
+                                    </div>
+                                </div>
+                                <div class="application__info-time time">
+                                    <span class="icon"><img src="../static/img/time.svg" alt="timeErr"></span>
+                                    <div class="time-data">
+                                        {{ answer.modified_date }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="application__status">
+                                <div class="app-status">
+                                    {{ answer.status }}
+                                </div>
+                                <div class="app-result">
+                                    {{ answer.score }}
+                                </div>
+                            </div>
+                        </div>
+                        {% if current_user.status == 'Преподаватель' %}
+                        <div class="app-btns">
+                            <div class="app-btn delete_btn">
+                                <a class="btn" href="/answer_delete/{{ answer.id }}">Отклонить</a>
+                            </div>
+                            <div class="app-btn approve_btn">
+                                <a class="btn" href="/answer_verif/{{ answer.id }}">Засчитать</a>                        
+                            </div>
+                        </div>
+                        {% endif %}
 
+                    </div>
+                </li>
                 {% endfor %}
             </ul>
+
+            <ul class="items applications task-items">
+                {% for answer in answers[::-1] if answer.status == "проверено" %}
+                <li class="item application task__item">
+                    <div class="application_btns">
+                        <div class="application__wrapper">
+                            <div class="application__pictures">
+                                {% if answer.task.topic.picture %}
+                                <img src="../static/img/{{ answer.task.topic.picture }}" alt="picturesErr">
+                                {% else %}
+                                <img src="../static/img/defpicture.png" alt="picturesErr">
+                                {% endif %}
+                            </div>
+                            <div class="application__info">
+                                <div class="application__info-titles">
+                                    <div class="application__title">
+                                        {{ answer.task.topic.title }}
+                                    </div>
+                                    <div class="application__subtitle">
+                                        Задание: {{ answer.task.title }}
+                                    </div>
+                                </div>
+                                <div class="application__info-time time">
+                                    <span class="icon"><img src="../static/img/time.svg" alt="timeErr"></span>
+                                    <div class="time-data">
+                                        {{ answer.modified_date }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="application__status approve_app">
+                                <div class="app-status__wrapper">
+                                    <div class="app-status">
+                                        {{ answer.status }}
+                                    </div>
+                                </div>
+                                <div class="app-result approve_app">
+                                    {{ answer.score }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <div class="empty-wrapper">
+                <div class="empty__content">
+                    <div class="empty">
+                        Здесь ничего нет
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </section>

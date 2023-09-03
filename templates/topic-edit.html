@@ -3,52 +3,69 @@
 {% block content %}
 <section class="topic-edit">
     <div class="topic-edit__body _container">
-        <h2>{{ topic_mode }}</h2>
-        <form action="" method="post" enctype="multipart/form-data">
-            {{ form.hidden_tag() }}
-            <div class="field">
-                {{ form.picture.label(for="picture", class="label") }}
-                {{ form.picture(class="input", id="picture", autocomplete="off") }}
-                {% for error in form.picture.errors %}
-                <p class="alert alert-danger" role="alert">
-                {{ error }}
-                </p>
-                {% endfor %}
+        <div class="content">
+            <div class="navigation-bar">
+                <h2>{{ topic_mode }}</h2>
             </div>
-            <div class="field">
-                {{ form.title.label(for="title", class="label") }}
-                {{ form.title(class="input", id="title", autocomplete="off") }}
-                {% for error in form.title.errors %}
-                <p class="alert alert-danger" role="alert">
-                {{ error }}
-                </p>
-                {% endfor %}
-            </div>
-            <div class="field">
-                {{ form.topic_lang.label(for="topic_lang", class="label") }}
-                {{ form.topic_lang(class="input", id="topic_lang", autocomplete="off") }}
-                {% for error in form.topic_lang.errors %}
-                <p class="alert alert-danger" role="alert">
-                {{ error }}
-                </p>
-                {% endfor %}
-            </div>
-            <div class="field">
-                {{ form.author.label(for="search-input-author", class="label") }}
-                {{ form.author(class="input", id="search-input-author", oninput="showSuggestionsAuthor()") }}
-                <div id="search-results-author"></div>
-                {% for error in form.author.errors %}
-                <p class="alert alert-danger" role="alert">
-                {{ error }}
-                </p>
-                {% endfor %}
-            </div>
+            <form action="" method="post" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                <div class="field avatar_field">
+                    {{ form.picture.label(for="picture", class="label") }}
 
-            <div class="field">{{ form.submit(type="submit", class="btn btn_submit") }}</div>
-            <p class="alert alert-danger" role="alert">
-                {{message}}
-            </p>
-        </form>
+                    <div class="avatar-container picture-container">
+                        {% if topic and topic.picture %}
+                        <img src="{{ url_for('static', filename='img/' + topic.picture) }}" alt="" class="avatar_preview picture_preview">
+                        {% else %}
+                        <img src="{{ url_for('static', filename='img/defpicture.png') }}" alt="" class="avatar_preview picture_preview">
+                        {% endif %}
+                    </div>
+                    {{ form.picture(class="input", id="picture", autocomplete="off", onchange="showPicture(this)", type="file", value="Загрузить фото") }}
+                    {% for error in form.picture.errors %}
+                    <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                    </p>
+                    {% endfor %}
+
+                </div>
+                <div class="field">
+                    {{ form.title.label(for="title", class="label") }}
+                    {{ form.title(class="input", id="title", autocomplete="off") }}
+                    {% for error in form.title.errors %}
+                    <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                    </p>
+                    {% endfor %}
+                </div>
+                <div class="field">
+                    {{ form.topic_lang.label(for="topic_lang", class="label") }}
+                    {{ form.topic_lang(class="input", id="topic_lang", autocomplete="off") }}
+                    {% for error in form.topic_lang.errors %}
+                    <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                    </p>
+                    {% endfor %}
+                </div>
+                <div class="field">
+                    {{ form.author.label(for="search-input-author", class="label") }}
+                    {{ form.author(class="input", id="search-input-author", autocomplete="off") }}
+                    <div id="search-results-author"></div>
+                    {% for error in form.author.errors %}
+                    <p class="alert alert-danger" role="alert">
+                    {{ error }}
+                    </p>
+                    {% endfor %}
+                </div>
+
+                <div class="field">
+                    <div class="btn-submit">
+                        {{ form.submit(type="submit", class="btn btn_submit") }}
+                    </div>
+                </div>
+                <p class="alert alert-danger" role="alert">
+                    {{message}}
+                </p>
+            </form>
+        </div>
     </div>
     </div>
 </section>

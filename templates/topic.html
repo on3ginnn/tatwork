@@ -3,46 +3,116 @@
 <section class="topic">
     <div class="topic__body _container">
         <div class="content">
-            <ul class="items">
-                <li class="item">
-                    <div class="picture">
+            <div class="navigation-bar">
+                <h2>Тема</h2>
+            </div>
+
+
+            <div class="panel">
+                <div class="panel__img">
+                    <div class="picture panel_img">
                         {% if topic.picture %}
                         <img src="../static/img/{{ topic.picture }}" alt="pictureErr">
                         {% else %}
-                        <img src="../static/img/picture.png" alt="pictureErr">
+                        <img src="../static/img/defpicture.png" alt="pictureErr">
+                        {% endif %}
+                    </div>
+
+                </div>
+                <div class="panel__profile panel_content">
+                    <div class="profile-data panel_data">
+                        <ul class="profile-items items panel_items">
+                            <li class="profile__items item panel_item">
+                                <div class="label">
+                                    НАЗВАНИЕ
+                                </div>
+                                <div class="item__data">
+                                    <div class="topic_name">{{ topic.title }}</div>
+                                </div>
+                            </li>
+                            <li class="profile__items item panel_item">
+                                <div class="label">
+                                    ЯЗЫК
+                                </div>
+                                <div class="item__data">
+                                    <div class="topic_lang">{{ topic.topic_lang }}</div>
+                                </div>
+                            </li>
+                            <li class="profile__items item panel_item">
+                                <div class="label">
+                                    АВТОР
+                                </div>
+                                <div class="item__data">
+                                    <div class="author">{{ topic.author }}</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    {% if current_user.status == 'Преподаватель' %}
+                    <div class="profile-tools panel_tools">
+                        <div class="tools__edit edit_btn">
+                            <a class="btn tools_btn" href="/topic/{{ topic.id }}">Изменить</a>
+                        </div>
+                        <div class="tools__delete delete_btn topic_del">
+                            <a class="btn tools_btn" href="/topic_delete/{{ topic.id }}">Удалить</a>
+                        </div>
+
+                        <div class="logout-wrapper">
+                            <div class="tools__add-app add_app">
+                                <a class="btn tools_btn" href="/task/{{ topic.id }}">Новое задание</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="navigation-bar">
+                <h3>Задания</h3>
+            </div>
+            {% if tasks %}
+            <ul class="tasks items">
+                {% for task in tasks %}
+                <li class="task item">
+                    <div class="wrapper__task">
+                        <div class="task-content">
+                            <div class="task__title-flex">
+                                <div class="task__title-wrapper">
+                                    <div class="task__title">
+                                        {{ loop.index }}. {{ task.title }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% if task.id not in user_answers %}
+                            <div class="task__btn btn-submit">
+                                <a class="btn btn_submit" href="/task_answer/{{ topic.id }}-{{ task.id }}">перейти</a>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% if current_user.status == 'Преподаватель' %}
+                        <div class="task-btns">
+                            <div class="tools__edit edit_btn">
+                                <a class="btn tools_btn" href="/task_edit/{{ topic.id }}-{{ task.id }}">Редактировать</a>
+                            </div>
+                            <div class="tools__delete delete_btn task_delete">
+                                <a class="btn tools_btn" href="/task_delete/{{ topic.id }}-{{ task.id }}">Удалить</a>
+                            </div>
+                        </div>
                         {% endif %}
                     </div>
                 </li>
-                <li class="item">
-                    <div class="topic-lang">{{ topic.topic_lang }}</div>
-                </li>
-                <li class="item">
-                    <div class="title">{{ topic.title }}</div>
-                </li>
-                <li class="item">
-                    <div class="author">{{ topic.author.name }} {{ topic.author.surname }}</div>
-                </li>
+                {% endfor %}
+
             </ul>
-            {% if current_user.status == 'Преподаватель' %}
-            <a href="/topic/{{ topic.id }}">Изменить</a>
-            <a href="/topic_delete/{{ topic.id }}">Удалить</a>
-            <a href="/task/{{ topic.id }}">Добавить задание</a>
+            {% else %}
+            <div class="empty-wrapper">
+                <div class="empty__content">
+                    <div class="empty">
+                        Здесь ничего нет
+                    </div>
+                </div>
+            </div>
             {% endif %}
 
-            <ul class="items">
-                {% for task in tasks %}
-                <li class="item">{{ task.title }}</li>
-                {% if task.id not in user_answers %}
-                <a href="/task_answer/{{ topic.id }}-{{ task.id }}">Выполнить</a>
-
-                {% endif %}
-
-                {% if current_user.status == 'Преподаватель' %}
-                <a href="/task_edit/{{ topic.id }}-{{ task.id }}">Изменить</a>
-                <a href="/task_delete/{{ topic.id }}-{{ task.id }}">Удалить</a>
-                {% endif %}
-                {% endfor %}
-            </ul>
         </div>
     </div>
 </section>

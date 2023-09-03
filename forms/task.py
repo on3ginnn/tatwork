@@ -61,16 +61,19 @@ from wtforms.validators import DataRequired, Optional
 #                 questions.append(question)
 #         return questions
 
+class AddAnswerForm(FlaskForm):
+    add_answer_choice = StringField('1 Вариант ответа', validators=[DataRequired()])
+
+
 class QuestionForm(FlaskForm):
     question = StringField('Вопрос', validators=[DataRequired()])
-    answer_choice = FieldList(StringField('Варианты ответа', validators=[DataRequired()]), min_entries=1)
+    answer_choice = FieldList(StringField('1 Вариант ответа', validators=[DataRequired()]), min_entries=1)
     right_choice = StringField('Правильный ответ', validators=[DataRequired()])
 
 
 class TaskForm(FlaskForm):
     title = StringField('Название задания', validators=[DataRequired()])
     questions = FieldList(FormField(QuestionForm), min_entries=1)
-    tests = FieldList(StringField('Тест', validators=[DataRequired()]), min_entries=0)
     submit = SubmitField('Создать задание')
 
 

@@ -21,7 +21,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
 
     student = relationship("Student", lazy="joined", backref="user")
     teacher = relationship("Teacher", lazy="joined", backref="user")
-    topic = relationship("Topic", lazy="joined", backref="author", uselist=True, primaryjoin="User.id==Topic.author_id")
+    # topic = relationship("Topic", lazy="joined", backref="author", uselist=True, primaryjoin="User.id==Topic.author_id")
     answer = relationship("Answers", lazy="joined", backref="user", uselist=True, primaryjoin="User.id==Answers.user_id")
     # - В таблице "User" создается отношение One-to-One между "Student" и "Teacher" таблицами
     # с помощью `relationship("Student", backref="user")` и `relationship("Teacher", backref="user")`.

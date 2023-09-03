@@ -11,7 +11,7 @@ class RegisterForm(FlaskForm):
     password_again = PasswordField('Повторите пароль', validators=[DataRequired()])
     group = SelectField('Группа', choices=[('ИС-222б', 'ИС-222б'), ('ИС-221', 'ИС-221')])
     avatar = FileField('Аватар', validators=[FileAllowed(['jpg', 'png', 'jpeg'], 'Форматы: jpg, png, jpeg')])
-    submit = SubmitField('Подтвердить')
+    submit = SubmitField('Зарегистрироваться')
 
 
 class ProfileEdit(FlaskForm):
@@ -19,8 +19,8 @@ class ProfileEdit(FlaskForm):
     surname = StringField('Фамилия', validators=[DataRequired()])
     password = PasswordField('Пароль', validators=[DataRequired()])
     group = SelectField('Группа', choices=[('ИС-222б', 'ИС-222б'), ('ИС-221', 'ИС-221')], validators=[Optional()])
-    avatar = FileField('Аватар', validators=[FileAllowed(['jpg', 'png', 'jpeg'], 'Форматы: jpg, png, jpeg')])
-    submit = SubmitField('Подтвердить')
+    avatar = FileField('Аватар', validators=[FileAllowed(['jpg', 'png', 'jpeg'], 'Загрузить фото')])
+    submit = SubmitField('Сохранить')
 
 
 class LoginForm(FlaskForm):

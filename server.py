@@ -5,7 +5,7 @@ from flask import Flask, render_template, redirect, abort, request # работ�
 from werkzeug.datastructures import MultiDict
 from werkzeug.utils import secure_filename
 import os
-from wtforms import RadioField, FieldList, SubmitField
+from wtforms import RadioField, FieldList, SubmitField, StringField
 from wtforms.validators import DataRequired
 
 from data import db_session # создание и подключение к БД
@@ -19,7 +19,8 @@ from data.answers import Answers
 import datetime
 
 from forms.answers import TestAnswersForm
-from forms.task import TaskForm
+from forms.search import SearchForm
+from forms.task import TaskForm, QuestionForm
 from forms.topic import TopicForm
 # from forms.task import TaskForm # формы для обработки HTML
 # from forms.topic import TopicForm
@@ -35,7 +36,7 @@ from flask import current_app
 
 app = Flask(__name__)
 api = Api(app)
-app.config['IMG_FOLDER'] = 'static/img'
+app.config['IMG_FOLDER'] = r'static/img'
 app.config['JSON_FOLDER'] = 'static/json'
 # js тоже надо указывать в статистических данных
 app.config['JS_FOLDER'] = 'static/scripts/script.js'
@@ -184,16 +185,42 @@ def topicsJson():
         tjson.write(topicsJsonLst)
 
 
+def img_name(filename, topicName=None, name=None, surname=None):
+    newFilename = '.'.join(filename.split('.')[:-1])
+    print('newFilename:', newFilename)
+    exif = filename.split('.')[-1]
+    print('exif:', exif)
+    try:
+        date = "_".join(datetime.datetime.now().strftime('%H-%M-%S %d-%m-%Y').split())
+
+        if topicName:
+            print('if')
+            topicName = topicName.replace("*", "").replace(":", "").replace("/", "").replace("\\", "").replace("?", "")
+            topicName = topicName.replace('"', "").replace('|', "").replace('<', "").replace('>', "")
+            newFilename = f'{topicName}_{date}'
+            pass
+        else:
+            print('else')
+            newFilename = f'{name}_{surname}_{date}'
+            print('newFilename:', newFilename)
+    except Exception:
+        newFilename = '.'.join(filename.split('.')[:-1])
+
+    return ".".join([newFilename, exif])
+
+
 def main():
     db_session.global_init('db/tatwork.db')
 
     # создать тест-записи в БД
     # artificialEngine()
-
-    # создание JSON файла со всеми пользователями
-    usersJson()
-    # создание JSON файла со всеми темами
-    topicsJson()
+    try:
+        # создание JSON файла со всеми пользователями
+        usersJson()
+        # создание JSON файла со всеми темами
+        topicsJson()
+    except Exception:
+        pass
 
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
@@ -260,17 +287,41 @@ def magic_for(id):
 def index():
     topics = db_sess.query(Topic).all()
 
-    return render_template("index.html", topics=topics)
+    form = SearchForm()
 
+    return render_template("index.html", topics=topics, form=form)
+#
+
+# @app.route('/add_choice', methods=['POST'])
+# def add_choice():
+#     choice_id = request.form.get('choice_id')
+#
+#     # Обновите форму с новыми данными (например, добавьте новое поле к соответствующему вопросу)
+#
+#     return jsonify(success=True)  # Отправьте ответ на клиент
+
+
+# @app.route('/add_choice/<int:topic_id>', methods=['GET'])
+# def add_choice(topic_id):
+#     form = TaskForm()
+#     new_question = QuestionForm()
+#     print(new_question.answer_choice)
+#     new_question.answer_choice.append_entry(StringField('Вариант ответа', validators=[DataRequired()]))
+#     print(new_question.answer_choice)
+#
+#     form.questions.append_entry(new_question)
+#
+#     return render_template('task.html', topic_id=topic_id, form=form)
 
 # Новое задание(создание), сразу же создаются вопросы и задания
 @app.route('/task/<int:topic_id>', methods=['GET', 'POST'])
 def new_task(topic_id):
     form = TaskForm()
-
     # создать другую проверку валидации, form.validate_on_submit() не работает, хз поч, проверять все то, что нужно
 
     if request.method == "POST":
+        questions = request.form.getlist('questions')
+        print(questions)
         print(form.questions.data)
         questions = []
         for question in form.questions.data:
@@ -295,7 +346,7 @@ def new_task(topic_id):
         db_sess.add(questions)
         db_sess.commit()
         return redirect(f'/topic_view/{topic_id}')
-    return render_template('task.html', form=form, task_mode='Новое задание')
+    return render_template('task.html', topic_id=topic_id, form=form, task_mode='Новое задание')
 
 
 # Смотреть задание(прохождение)
@@ -382,12 +433,16 @@ def answer_edit(answer_id):
             for num in range(len(answers.answers)):
                 print(questions.question[num])
                 print(answers.answers[num])
+                if answers.answers[num]['answer'] not in questions.question[num]['answer_choice']:
+                    user_answer_index_for_choices = 0
+                else:
+                    user_answer_index_for_choices = \
+                        questions.question[num]['answer_choice'].index(answers.answers[num]['answer'])
                 questions_by_user.append(
                     {'question': questions.question[num]['question'],
                      'answer_choice': questions.question[num]['answer_choice'],
                      'right_choice': questions.question[num]['right_choice'],
-                     'user_answer_index_for_choices':
-                         questions.question[num]['answer_choice'].index(answers.answers[num]['answer'])
+                     'user_answer_index_for_choices': user_answer_index_for_choices
                      }
                 )
             print(questions_by_user)
@@ -409,7 +464,7 @@ def answer_edit(answer_id):
             answers.answers = answers_items
             answers.status = 'На проверке'
             answers.score = score
-            answers.modified_date = datetime.datetime.now()
+            answers.modified_date = datetime.datetime.now().strftime('%H:%M %d.%m.%Y')
 
             db_sess.commit()
 
@@ -425,7 +480,7 @@ def answer_edit(answer_id):
 def answer_verif(answer_id):
     if current_user.is_authenticated:
         answers = db_sess.query(Answers).filter_by(id=answer_id).first()
-        answers.status = 'Зачтено'
+        answers.status = 'проверено'
 
         db_sess.commit()
 
@@ -463,7 +518,10 @@ def users_list():
     if current_user.is_authenticated:
         students = db_sess.query(Student).all()
         teachers = db_sess.query(Teacher).all()
-        return render_template('users-list.html', students=students, teachers=teachers)
+        form = SearchForm()
+
+        return render_template('users-list.html', students=students, teachers=teachers, form=form,
+                               pagetitle='Все пользователи')
     else:
         return redirect('/register')
 
@@ -478,31 +536,27 @@ def new_topic():
         if db_sess.query(Topic).filter_by(title=form.title.data).first():
             return render_template('topic-edit.html', form=form, topic_mode='Новая тема',
                                    message="Такая тема уже есть.")
-
-        try:
-
-            name, surname = str(form.author.data).split()
-
-            user = db_sess.query(User).filter_by(name=name, surname=surname).first()
-            if not user:
-                return render_template('topic-edit.html', form=form, topic_mode='Новая тема',
-                                       message="Пользователь, указанный автором, не найден.")
-        except Exception:
+        elif not form.author.data:
             return render_template('topic-edit.html', form=form, topic_mode='Новая тема',
-                                   message="Инициалы автора должны содержать Имя и Фамилию")
-
-
+                                   message="Инициалы автора должны содержать Имя и Фамилию.")
+        topicName = form.title.data
         topic = Topic(
-            title=form.title.data,
-            author_id=user.id,
+            title=topicName,
+            author=form.author.data,
             topic_lang=form.topic_lang.data,
         )
-        picture = request.files['picture']
-        if picture:
-            filename = secure_filename(picture.filename)
-            picture_path = os.path.join(app.config['IMG_FOLDER'], filename)
-            picture.save(picture_path)
-            topic.picture = filename
+        try:
+            picture = request.files['picture']
+            if picture:
+                filename = secure_filename(picture.filename)
+                filename = img_name(filename, topicName=topicName)
+                picture_path = os.path.join(app.config['IMG_FOLDER'], filename)
+                picture_path = picture_path.replace('\\', '/')
+
+                picture.save(picture_path)
+                topic.picture = filename
+        except Exception:
+            topic.picture = None
         db_sess.add(topic)
         db_sess.commit()
 
@@ -519,13 +573,13 @@ def new_topic():
 def edit_topic(id):
     global db_sess
     form = TopicForm()
+    topic = db_sess.query(Topic).filter_by(id=id).first()
 
     if request.method == "GET":
-        topic = db_sess.query(Topic).filter_by(id=id).first()
         if topic:
             form.title.data = topic.title
             if topic.author:
-                author = f'{topic.author.name} {topic.author.surname}'
+                author = topic.author
             else:
                 author = 'Не найден'
             form.author.data = author
@@ -534,39 +588,51 @@ def edit_topic(id):
         else:
             abort(404)
     if form.validate_on_submit():
-        full_name = str(form.author.data)
-        name, surname = "", ""
-        if len(full_name.split()) == 2:
-            name, surname = full_name.split()
-        else:
+        # full_name = str(form.author.data)
+        # name, surname = "", ""
+        # if len(full_name.split()) == 2:
+        #     name, surname = full_name.split()
+        # else:
+        #     return render_template('topic-edit.html', form=form, topic_mode='Редактирование темы',
+        #                            message="Неверное значение поля автора. Надо: <имя фамилия>")
+        #
+        # user = db_sess.query(User).filter_by(name=name, surname=surname).first()
+        #
+        # if not user:
+        #     return render_template('topic-edit.html', form=form, topic_mode='Редактирование темы',
+        #                            message="Пользователь, указанный автором, не найден.")
+        if not form.author.data:
             return render_template('topic-edit.html', form=form, topic_mode='Редактирование темы',
-                                   message="Неверное значение поля автора. Надо: <имя фамилия>")
-
-        user = db_sess.query(User).filter_by(name=name, surname=surname).first()
-
-        if not user:
-            return render_template('topic-edit.html', form=form, topic_mode='Редактирование темы',
-                                   message="Пользователь, указанный автором, не найден.")
-
-        topic = db_sess.query(Topic).filter_by(id=id).first()
+                                   message="Инициалы автора должны содержать Имя и Фамилию.")
 
         if topic:
             try:
                 # Редактирование картинки темы (без учета расширения)
-                picture = request.files['picture']
-                if picture:
-                    filename = secure_filename(picture.filename)
-                    picture_path = os.path.join(app.config['IMG_FOLDER'], filename)
-                    print(picture_path)
+                topicName = form.title.data
+                try:
+                    picture = request.files['picture']
+                    if picture:
+                        filename = secure_filename(picture.filename)
+                        filename = img_name(filename, topicName=topicName)
 
-                    picture.save(picture_path)
-                    if topic.picture:
-                        old_picture_path = os.path.join(app.config['IMG_FOLDER'], topic.picture)
-                        os.remove(old_picture_path)
-                    db_sess.query(Topic).filter_by(id=id).update({Topic.picture: filename})
+                        picture_path = os.path.join(app.config['IMG_FOLDER'], filename)
+                        picture_path = picture_path.replace('\\', '/')
 
+                        print(picture_path)
+
+                        picture.save(picture_path)
+                        if topic.picture:
+                            try:
+                                old_picture_path = os.path.join(app.config['IMG_FOLDER'], topic.picture)
+                                os.remove(old_picture_path)
+                            except Exception:
+                                pass
+                        db_sess.query(Topic).filter_by(id=id).update({Topic.picture: filename})
+                except Exception:
+                    topic.picture = None
                 # Редактирование других данных темы
-                db_sess.query(Topic).filter_by(id=id).update({Topic.title: form.title.data, Topic.author_id: user.id,
+                db_sess.query(Topic).filter_by(id=id).update({Topic.title: topicName,
+                                                              Topic.author: form.author.data,
                                                               Topic.topic_lang: form.topic_lang.data})
 
                 db_sess.commit()
@@ -581,7 +647,7 @@ def edit_topic(id):
         else:
             abort(404)
 
-    return render_template('topic-edit.html', form=form, topic_mode='Редактирование темы')
+    return render_template('topic-edit.html', form=form, topic=topic, topic_mode='Редактирование темы')
 
 
 def task_delete_func(tasks):
@@ -636,7 +702,7 @@ def answer_delete(answer_id):
 
     db_sess.delete(answer)
     db_sess.commit()
-    return redirect(f'/users_list')
+    return redirect(f'/answers_check')
 
 
 # Смотреть тему(содержание)
@@ -707,7 +773,7 @@ def login():
         return render_template('login.html',
                                message="Неправильный логин или пароль",
                                form=form)
-    return render_template('login.html', message="Заполните все поля!", form=form)
+    return render_template('login.html', form=form)
 
 
 # Регистрация для преподов
@@ -761,18 +827,29 @@ def reqister():
             return render_template('register.html', form=form, message="Такой пользователь уже есть")
 
         # создаем объект пользователя User
+        name, surname = form.name.data, form.surname.data
         user = User(
-            name=form.name.data,
-            surname=form.surname.data
+            name=name,
+            surname=surname
         )
+        try:
+            avatar = request.files['avatar']
+            if avatar:
+                filename = secure_filename(avatar.filename)
+                print(filename)
+                filename = img_name(filename, name=name, surname=surname)
+                print(filename)
 
-        avatar = request.files['avatar']
-        if avatar:
-            filename = secure_filename(avatar.filename)
-            avatar_path = os.path.join(app.config['IMG_FOLDER'], filename)
-            avatar.save(avatar_path)
-            user.avatar = filename
+                avatar_path = os.path.join(app.config['IMG_FOLDER'], filename)
+                print(avatar_path)
 
+                avatar_path = avatar_path.replace('\\', '/')
+                print(avatar_path)
+
+                avatar.save(avatar_path)
+                user.avatar = filename
+        except Exception:
+            user.avatar = None
         user.set_password(form.password.data)
 
         # создаем объект студента и связываем его с пользователем
@@ -810,23 +887,34 @@ def edit_profile(id):
     if form.validate_on_submit():
         if user:
             try:
-                edit_user = db_sess.query(User).filter_by(name=form.name.data, surname=form.surname.data).first()
+                name, surname = form.name.data, form.surname.data
+
+                edit_user = db_sess.query(User).filter_by(name=name, surname=surname).first()
                 if edit_user and edit_user.id != user.id:
                     return render_template('edit_profile.html', form=form, status=user.status,
                                            message="Пользователь с такими инициалами уже есть.")
-                # Редактирование аватарки (без учета расширения)
-                avatar = request.files['avatar']
-                if avatar:
-                    filename = secure_filename(avatar.filename)
-                    avatar_path = os.path.join(app.config['IMG_FOLDER'], filename)
-                    print(avatar_path)
+                try:
+                    # Редактирование аватарки (без учета расширения)
+                    avatar = request.files['avatar']
+                    if avatar:
+                        filename = secure_filename(avatar.filename)
+                        filename = img_name(filename, name=name, surname=surname)
 
-                    avatar.save(avatar_path)
-                    if user.avatar:
-                        old_avatar_path = os.path.join(app.config['IMG_FOLDER'], user.avatar)
-                        os.remove(old_avatar_path)
-                    db_sess.query(User).filter(User.id == user.id).update({User.avatar: filename})
+                        avatar_path = os.path.join(app.config['IMG_FOLDER'], filename)
+                        avatar_path = avatar_path.replace('\\', '/')
+                        # avatar_path = f'static/img/{filename}'
+                        print(avatar_path)
 
+                        avatar.save(avatar_path)
+                        if user.avatar:
+                            try:
+                                old_avatar_path = os.path.join(app.config['IMG_FOLDER'], user.avatar)
+                                os.remove(old_avatar_path)
+                            except Exception:
+                                pass
+                        db_sess.query(User).filter(User.id == user.id).update({User.avatar: filename})
+                except Exception:
+                    user.avatar = None
                 # Редактирование других данных профиля пользователя
                 # Обновляем имя пользователя и группу студента (нельзя 2 сессии одновремено, поэтому update)
                 user.set_password(form.password.data)
@@ -845,34 +933,66 @@ def edit_profile(id):
         else:
             abort(404)
 
-    return render_template('edit_profile.html', form=form, status=user.status)
-
-                # <!-- {% if current_user.student %}
-                # <div class="field">
-                #     {{ form.group.label(for="group", class="label") }}
-                #     {{ form.group(class="input", id="group") }}
-                #     {% for error in form.group.errors %}
-                #     <p class="alert alert-danger" role="alert">
-                #     {{ error }}
-                #     </p>
-                #     {% endfor %}
-                # </div>
-                # {% endif %} -->
+    return render_template('edit_profile.html', form=form, status=user.status, user=user)
 
 
-                        # <!-- {% if current_user.student %}
-                        # <div class="status__value">
-                        #     Студент
-                        # </div>
-                        # <div class="group">
-                        #     {{ current_user.student[0].group }}
-                        # </div>
-                        # {% else %}
-                        # <div class="status__value">
-                        #     Преподаватель
-                        # </div>
-                        # {% endif %} -->
+@app.route('/searсh_to', methods=['POST'])
+@login_required
+def search_to():
+    form = SearchForm()
+    users = db_sess.query(User).all()
+    search_to_data = form.searchField.data
 
+    def search_with(surname, name, oneArg=False):
+        # oneArg - проверка на то, что имя и фам одно и тоже
+        # if oneArg:
+        #
+        # else:
+        users = db_sess.query(User).all()
+
+        matching_users = []
+
+        for ind in range(len(surname), 0, -1):
+            search_with = surname[:ind].lower()
+            matching_users += [user for user in users
+                               if user.surname.lower().startswith(search_with)]
+
+        for ind in range(len(name), 0, -1):
+            search_with = name[:ind].lower()
+            matching_users += [user for user in users
+                               if user.name.lower().startswith(search_with)]
+
+        matching_users = list(dict.fromkeys(matching_users))
+
+        students = [db_sess.query(Student).filter_by(user=user).first() for user in matching_users if user.student]
+        teachers = [db_sess.query(Teacher).filter_by(user=user).first() for user in matching_users if user.teacher]
+
+        return students, teachers
+
+    if len(search_to_data.split()) >= 2:
+
+        search_surname, search_name = search_to_data.split()[0], search_to_data.split()[1]
+
+        students1, teachers1 = search_with(search_surname, search_name)
+        # так как имя может быть на месте фамилии
+        students2, teachers2 = search_with(search_name, search_surname)
+
+        students = students1 + students2
+        students = list(dict.fromkeys(students))
+        teachers = teachers1 + teachers2
+        teachers = list(dict.fromkeys(teachers))
+
+    elif len(search_to_data.split()) == 1:
+        search_mb_name = search_to_data
+        search_mb_surname = search_to_data
+
+        students, teachers = search_with(search_mb_surname, search_mb_name)
+
+    else:
+        students = db_sess.query(Student).all()
+        teachers = db_sess.query(Teacher).all()
+    return render_template('users-list.html', students=students, teachers=teachers,
+                           pagetitle=f'Поиск: {search_to_data}')
 
 
 if __name__ == '__main__':

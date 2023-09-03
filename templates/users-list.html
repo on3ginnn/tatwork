@@ -4,38 +4,79 @@
 <section class="users-list">
     <div class="users-list__body _container">
         <div class="content">
-            <h2>Преподаватели</h2>
-            <ul class="items teacher-items">
-                {% for teacher in teachers %}
-                <li class="item">
-                    <div class="avatar">
-                        {% if teacher.user.avatar %}
-                        <img src="../static/img/{{ teacher.user.avatar }}" alt="avatarErr">
-                        {% else %}
-                        <img src="../static/img/avatar.png" alt="avatarErr">
-                        {% endif %}
-                    </div>
-                    <a class="user" href="/profile/{{ teacher.user.id }}">{{ teacher.user.name }} {{ teacher.user.surname }}</a>
-                </li>
+            <div class="navigation-bar">
+                <h2>{{ pagetitle }}</h2>
+            </div>
+            {% if teachers or students %}
+            <div class="user-list_wrapper">
+                {% if teachers %}
+                <div class="navigation-bar">
+                    <h3>Преподаватели</h3>
+                </div>
+                <ul class="items teacher-items">
+                    {% for teacher in teachers %}
+                    <li class="item teacher-item">
+                        <div class="user-wrapper teacher-wrapper">
+                            <a href="/profile/{{ teacher.user.id }}" class="user-profile_link teacher-profile_link">
+                                <div class="user-wrapper__avatar avatar">
+                                    {% if teacher.user.avatar %}
+                                    <img src="../static/img/{{ teacher.user.avatar }}" alt="avatarErr">
+                                    {% else %}
+                                    <img src="../static/img/avatar.png" alt="avatarErr">
+                                    {% endif %}
+                                </div>
+                                <div class="user-wrapper__info teacher_info">
+                                    <div class="initialized">
+                                        {{ student.user.surname }} {{ student.user.name }}
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
 
-                {% endfor %}
-            </ul>
-            <h2>Студенты</h2>
-            <ul class="items student-items">
-                {% for student in students %}
-                <li class="item">
-                    <div class="avatar">
-                        {% if student.user.avatar %}
-                        <img src="../static/img/{{ student.user.avatar }}" alt="avatarErr">
-                        {% else %}
-                        <img src="../static/img/avatar.png" alt="avatarErr">
-                        {% endif %}
+                {% if students %}
+                <div class="navigation-bar">
+                    <h3>Студенты</h3>
+                </div>
+                <ul class="items student-items">
+                    {% for student in students %}
+                    <li class="item student-item">
+                        <div class="user-wrapper student-wrapper">
+                            <a href="/profile/{{ student.user.id }}" class="user-profile_link student-profile_link">
+                                <div class="user-wrapper__avatar avatar">
+                                    {% if student.user.avatar %}
+                                    <img src="../static/img/{{ student.user.avatar }}" alt="avatarErr">
+                                    {% else %}
+                                    <img src="../static/img/avatar.png" alt="avatarErr">
+                                    {% endif %}
+                                </div>
+                                <div class="user-wrapper__info student_info">
+                                    <div class="initialized">
+                                        {{ student.user.surname }} {{ student.user.name }}
+                                    </div>
+                                    <div class="student_group">
+                                        {{ student.group }}
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="empty-wrapper">
+                <div class="empty__content">
+                    <div class="empty">
+                        Здесь ничего нет
                     </div>
-                    <a class="user" href="/profile/{{ student.user.id }}">{{ student.user.name }} {{ student.user.surname }}</a>
-                </li>
-
-                {% endfor %}
-            </ul>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </section>
