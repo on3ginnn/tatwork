@@ -6,7 +6,7 @@
             <div class="navigation-bar">
                 <h2>Ответы на проверку</h2>
             </div>
-            {% if answers %}
+            {% if answers and answers[0].status != "проверено" %}
             <ul class="items applications task-items">
                 {% for answer in answers[::-1] if answer.status != "проверено" %}
                 <li class="item application task__item">
@@ -42,7 +42,12 @@
                             </div>
                             <div class="application__status">
                                 <div class="app-status">
-                                    {{ answer.status }}
+                                    <div class="text">
+                                        {{ answer.status }}
+                                    </div>
+                                    <div class="icon">
+                                        <img src="../static/img/inprogress.svg" alt="inProcess">
+                                    </div>
                                 </div>
                                 <div class="app-result">
                                     {{ answer.score }}

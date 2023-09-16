@@ -69,27 +69,46 @@
                             {% endif %}
                         </ul>
                     </div>
-                    <div class="profile-tools panel_tools">
-                        <div class="tools__edit edit_btn">
-                            {% if user.id == current_user.id or current_user.status == 'Преподаватель' %}
-                            <a class="btn tools_btn" href="/profile_edit/{{ user.id }}">Изменить</a>
-                            {% endif %}
-                        </div>
-                        <div class="tools__delete delete_btn">
-                            {% if user.id == current_user.id or current_user.status == 'Преподаватель' %}
-                            <a class="btn tools_btn" href="/profile_delete/{{ user.id }}">Удалить</a>
+                    {% if current_user.status == 'Преподаватель' or user == current_user %}
 
-                            {% endif %}
+                    <div class="profile-tools panel_tools">
+                        <div class="tools__edit edit_btn tool_btn">
+                            <a class="btn tools_btn" href="/profile_edit/{{ user.id }}">Изменить</a>
                         </div>
+                        <div class="tools__delete delete_btn topic_del tool_btn">
+                            <a class="btn tools_btn" href="/profile_delete/{{ user.id }}">Удалить</a>
+                        </div>
+                        {% if user == current_user %}
+
                         <div class="logout-wrapper">
-                            <div class="tools__logout">
-                                {% if user == current_user %}
+                            <div class="tools__logout tool_btn">
                                 <a class="btn tools_btn" href="/logout">Выйти</a>
-                                {% endif %}
                             </div>
                         </div>
+                        {% endif %}
                     </div>
+                    {% endif %}
+
                 </div>
+                {% if current_user.status == 'Преподаватель' or user == current_user %}
+                <div class="profile-tools mobile_tools">
+                    <div class="tools__edit edit_btn tool_btn">
+                        <a class="btn tools_btn" href="/profile_edit/{{ user.id }}">Изменить</a>
+                    </div>
+                    <div class="tools__delete delete_btn topic_del tool_btn">
+                        <a class="btn tools_btn" href="/profile_delete/{{ user.id }}">Удалить</a>
+                    </div>
+                    {% if user == current_user %}
+
+                    <div class="logout-wrapper">
+                        <div class="tools__logout tool_btn">
+                            <a class="btn tools_btn" href="/logout">Выйти</a>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                </div>
+                {% endif %}
             </div>
             <div class="navigation-bar">
                 <h3>Выполненные задания</h3>
@@ -116,16 +135,23 @@
                                         Задание: {{ answer.task.title }}
                                     </div>
                                 </div>
-                                <div class="application__info-time time">
-                                    <span class="icon"><img src="../static/img/time.svg" alt="timeErr"></span>
-                                    <div class="time-data">
-                                        {{ answer.modified_date }}
+                                <div class="wrapper-time-name">
+                                    <div class="application__info-time time">
+                                        <span class="icon"><img src="../static/img/time.svg" alt="timeErr"></span>
+                                        <div class="time-data">
+                                            {{ answer.modified_date }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="application__status">
                                 <div class="app-status">
-                                    {{ answer.status }}
+                                    <div class="text">
+                                        {{ answer.status }}
+                                    </div>
+                                    <div class="icon">
+                                        <img src="../static/img/inprogress.svg" alt="inProcess">
+                                    </div>
                                 </div>
                                 <div class="app-result">
                                     {{ answer.score }}
@@ -152,7 +178,7 @@
                 {% for answer in user.answer[::-1] if answer.status == "проверено" %}
                 <li class="item application task__item">
                     <div class="application_btns">
-                        <div class="application__wrapper">
+                        <div class="application__wrapper check_app">
                             <div class="application__pictures">
                                 {% if answer.task.topic.picture %}
                                 <img src="../static/img/{{ answer.task.topic.picture }}" alt="picturesErr">
@@ -169,17 +195,24 @@
                                         Задание: {{ answer.task.title }}
                                     </div>
                                 </div>
-                                <div class="application__info-time time">
-                                    <span class="icon"><img src="../static/img/time.svg" alt="timeErr"></span>
-                                    <div class="time-data">
-                                        {{ answer.modified_date }}
+                                <div class="wrapper-time-name">
+                                    <div class="application__info-time time">
+                                        <span class="icon"><img src="../static/img/time.svg" alt="timeErr"></span>
+                                        <div class="time-data">
+                                            {{ answer.modified_date }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="application__status approve_app">
                                 <div class="app-status__wrapper">
                                     <div class="app-status">
-                                        {{ answer.status }}
+                                        <div class="text">
+                                            {{ answer.status }}
+                                        </div>
+                                        <div class="icon">
+                                            <img src="../static/img/check-mobile.svg" alt="inProcess">
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="app-result approve_app">

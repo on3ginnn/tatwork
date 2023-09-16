@@ -28,16 +28,24 @@
                                         Задание: {{ answer.task.title }}
                                     </div>
                                 </div>
-                                <div class="application__info-time time">
-                                    <span class="icon"><img src="../static/img/time.svg" alt="timeErr"></span>
-                                    <div class="time-data">
-                                        {{ answer.modified_date }}
+                                <div class="wrapper-time-name">
+                                    <div class="application__info-time time">
+                                        <span class="icon"><img src="../static/img/time.svg" alt="timeErr"></span>
+                                        <div class="time-data">
+                                            {{ answer.modified_date }}
+                                        </div>
                                     </div>
+
                                 </div>
                             </div>
                             <div class="application__status">
                                 <div class="app-status">
-                                    {{ answer.status }}
+                                    <div class="text">
+                                        {{ answer.status }}
+                                    </div>
+                                    <div class="icon">
+                                        <img src="../static/img/inprogress.svg" alt="inProcess">
+                                    </div>
                                 </div>
                                 <div class="app-result">
                                     {{ answer.score }}
@@ -64,7 +72,7 @@
                 {% for answer in answers[::-1] if answer.status == "проверено" %}
                 <li class="item application task__item">
                     <div class="application_btns">
-                        <div class="application__wrapper">
+                        <div class="application__wrapper check_app">
                             <div class="application__pictures">
                                 {% if answer.task.topic.picture %}
                                 <img src="../static/img/{{ answer.task.topic.picture }}" alt="picturesErr">
@@ -81,17 +89,24 @@
                                         Задание: {{ answer.task.title }}
                                     </div>
                                 </div>
-                                <div class="application__info-time time">
-                                    <span class="icon"><img src="../static/img/time.svg" alt="timeErr"></span>
-                                    <div class="time-data">
-                                        {{ answer.modified_date }}
+                                <div class="wrapper-time-name">
+                                    <div class="application__info-time time">
+                                        <span class="icon"><img src="../static/img/time.svg" alt="timeErr"></span>
+                                        <div class="time-data">
+                                            {{ answer.modified_date }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="application__status approve_app">
                                 <div class="app-status__wrapper">
                                     <div class="app-status">
-                                        {{ answer.status }}
+                                        <div class="text">
+                                            {{ answer.status }}
+                                        </div>
+                                        <div class="icon">
+                                            <img src="../static/img/check-mobile.svg" alt="inProcess">
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="app-result approve_app">

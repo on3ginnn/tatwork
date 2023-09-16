@@ -50,21 +50,37 @@
                     </div>
                     {% if current_user.status == 'Преподаватель' %}
                     <div class="profile-tools panel_tools">
-                        <div class="tools__edit edit_btn">
+                        <div class="tools__edit edit_btn tool_btn">
                             <a class="btn tools_btn" href="/topic/{{ topic.id }}">Изменить</a>
                         </div>
-                        <div class="tools__delete delete_btn topic_del">
+                        <div class="tools__delete delete_btn topic_del tool_btn">
                             <a class="btn tools_btn" href="/topic_delete/{{ topic.id }}">Удалить</a>
                         </div>
 
                         <div class="logout-wrapper">
-                            <div class="tools__add-app add_app">
+                            <div class="tools__add-app add_app tool_btn">
                                 <a class="btn tools_btn" href="/task/{{ topic.id }}">Новое задание</a>
                             </div>
                         </div>
                     </div>
                     {% endif %}
                 </div>
+                {% if current_user.status == 'Преподаватель' %}
+                <div class="profile-tools mobile_tools">
+                    <div class="tools__edit edit_btn tool_btn">
+                        <a class="btn tools_btn" href="/topic/{{ topic.id }}">Изменить</a>
+                    </div>
+                    <div class="tools__delete delete_btn topic_del tool_btn">
+                        <a class="btn tools_btn" href="/topic_delete/{{ topic.id }}">Удалить</a>
+                    </div>
+
+                    <div class="logout-wrapper">
+                        <div class="tools__add-app add_app tool_btn">
+                            <a class="btn tools_btn" href="/task/{{ topic.id }}">Новое задание</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
             </div>
             <div class="navigation-bar">
                 <h3>Задания</h3>
@@ -90,10 +106,10 @@
                         </div>
                         {% if current_user.status == 'Преподаватель' %}
                         <div class="task-btns">
-                            <div class="tools__edit edit_btn">
+                            <div class="tools__edit edit_btn tool_btn">
                                 <a class="btn tools_btn" href="/task_edit/{{ topic.id }}-{{ task.id }}">Редактировать</a>
                             </div>
-                            <div class="tools__delete delete_btn task_delete">
+                            <div class="tools__delete delete_btn task_delete tool_btn">
                                 <a class="btn tools_btn" href="/task_delete/{{ topic.id }}-{{ task.id }}">Удалить</a>
                             </div>
                         </div>

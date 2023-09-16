@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('search-input');
+    const searchMobile = document.querySelector('.search-icon-mobile');
     const search = document.getElementById('search-results').parentNode;
     const searchBlur = document.getElementById('search_blur');
     console.log(searchBlur);
@@ -12,20 +13,53 @@ document.addEventListener('DOMContentLoaded', function() {
         showResults();
     });
 
-    searchBlur.addEventListener('mousedown', function() {
-        console.log('я тут');
-        hideResults();
+
+    searchMobile.addEventListener('click', function(event) {
+        if (event.target.closest('.search-icon_mobile')) {
+            showResults();
+        }
     });
+
+    function handleInteractionBlur() {
+        hideResults();
+    }
+    
+    searchBlur.addEventListener('click', handleInteractionBlur);
 
     function showResults() {
         console.log(search);
         search.classList.add('active');
+        searchBlur.classList.add('active');
         showSuggestions();
     }
 
     function hideResults() {
         search.classList.remove('active');
+        searchBlur.classList.remove('active');
     }
+
+
+
+    const profileDropdown = document.querySelector('.profile_dropdown');
+    const profilePreview = document.querySelector('.profile-preview');
+
+    profilePreview.addEventListener('click', function(event) {
+        if (event.target.closest('.profile-preview')) {
+            profileDropdown.classList.add('active');
+        }
+    });
+
+
+    const fieldFree = document.getElementById('field_free');
+
+    function handleInteraction() {
+        profileDropdown.classList.remove('active');
+    }
+    
+    fieldFree.addEventListener('mousedown', handleInteraction);
+    fieldFree.addEventListener('click', handleInteraction);
+    fieldFree.addEventListener('touchstart', handleInteraction);
+
 });
 
 
@@ -76,7 +110,7 @@ addQuestionButton.addEventListener("click", function() {
 
     var questionNum = document.createElement('div');
     questionNum.className = 'question__number';
-    questionNum.innerHTML = `${++questionItemId}`;
+    questionNum.innerHTML = `${+questionItemId + 1}`;
 
     var questionWrapper = document.createElement('div');
     questionWrapper.className = 'question__wrapper';
@@ -144,7 +178,7 @@ addQuestionButton.addEventListener("click", function() {
 
     let deleteQuestion = `
     <div class="delete-btn-wrapper">
-    <div class="delete_btn">
+    <div class="delete_btn tool_btn">
         <button type="button" class="btn tools_btn" id="delete_quastion_button" onclick="deleteQuestion()">Удалить</button>
     </div></div>`;
     field_right_answer.insertAdjacentHTML('afterend', deleteQuestion);
@@ -153,7 +187,7 @@ addQuestionButton.addEventListener("click", function() {
 
 
 function deleteQuestion() {
-    let questionItem = event.target.parentNode.parentNode.parentNode.parentNode.parentNode;
+    let questionItem = event.target.closest('.question__item');
     let questionDeleteId = parseInt(questionItem.id);
     questionItem.remove();
 
@@ -171,7 +205,7 @@ function deleteQuestion() {
 
 
 function deleteChoice() {
-    let choiceItem = event.target.parentNode.parentNode.parentNode.parentNode;
+    let choiceItem = event.target.closest('.choice');
     console.log(choiceItem);
 
     let choiceItems = choiceItem.parentNode.children;
@@ -192,10 +226,9 @@ function deleteChoice() {
 
 
 function addChoice() {
-    let choices = event.target.parentNode.querySelector('.choices');
+    let choices = event.target.closest('.choices-wrapper').querySelector('.choices');
     let choice_count = choicesCount(choices);
-    console.log(choices.parentNode.parentNode.parentNode);
-    let questionItemId = choices.parentNode.parentNode.parentNode.id;
+    let questionItemId = choices.closest('.question__item').id;
 
     let choices_count = choices.querySelectorAll(".choice").length;
 
@@ -276,10 +309,10 @@ function showSuggestions() {
                 // Фильтруем пользователей, оставляя только тех, у которых имя или фамилия начинается с текущего текста
                 var matchingUsers = users.filter(function(user) {
                     return user.surname.toLowerCase().startsWith(searchText.toLowerCase()) || user.name.toLowerCase().startsWith(searchText.toLowerCase());
-                });
-                var matchingTopics = topics.filter(function(topic) {
+                }).slice(0, 3);
+                var matchingTopics = topics.filter(function(topic, index) {
                     return topic.title.toLowerCase().startsWith(searchText.toLowerCase());
-                });
+                }).slice(0, 3);
                 console.log(matchingUsers);
                 console.log(matchingTopics);
 
@@ -291,7 +324,7 @@ function showSuggestions() {
                     
                     const li = document.createElement('li');
                     li.className = 'search__topic';
-                    li.innerHTML = `<a href="/topic_view/${topic.id}">${topic.title}</a>`;
+                    li.innerHTML = `<a class="initialized btn" href="/topic_view/${topic.id}">${topic.title}</a>`;
                     
                     ul.appendChild(li);
 
@@ -316,7 +349,7 @@ function showSuggestions() {
                                             
                     const li = document.createElement('li');
                     li.className = 'search-user';
-                    li.innerHTML = `<a href="/profile/${user.id}">${user.surname} ${user.name}</a>`;
+                    li.innerHTML = `<a class="initialized btn" href="/profile/${user.id}">${user.surname} ${user.name}</a>`;
                     
                     ul.appendChild(li);
                 });

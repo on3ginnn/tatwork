@@ -326,6 +326,7 @@ def new_task(topic_id):
         questions = []
         for question in form.questions.data:
             try:
+                print(question['question'])
                 print(question['answer_choice'])
                 question_item = {'question': question['question'],
                                  'answer_choice': question['answer_choice'],
@@ -382,6 +383,8 @@ def task_answer(topic_task_id):
             db_sess.commit()
 
             return redirect(f'/topic_view/{topic_id}')
+        for i in questions.question:
+            print(i['question'])
         return render_template('answers.html', form=form, task=task, questions=questions.question)
     else:
         return redirect('/register')
@@ -991,8 +994,13 @@ def search_to():
     else:
         students = db_sess.query(Student).all()
         teachers = db_sess.query(Teacher).all()
+
+    pagetitle = f'Поиск: {search_to_data}'
+    if not search_to_data:
+        pagetitle = 'Все пользователи'
+
     return render_template('users-list.html', students=students, teachers=teachers,
-                           pagetitle=f'Поиск: {search_to_data}')
+                           pagetitle=pagetitle)
 
 
 if __name__ == '__main__':

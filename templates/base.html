@@ -21,13 +21,18 @@
                         <a class="logo" href="/">
                             ТАТ<span class="red">ВОРК</span>
                         </a>
-                        <li class="search">
+                        <div class="search">
                             <form action="/searсh_to" method="post" enctype="multipart/form-data">
 
                                 <input type="text" name="searchField" id="search-input" placeholder="Поиск..." autocomplete="off">
-                                <div class="search-icon__wrapper">
+                                <div class="search-icon__wrapper search-btn__dsc">
                                     <button type="submit" name="submit" class="search-icon">
                                         <img src="../static/img/search.svg" alt="searchErr">
+                                    </button>
+                                </div>
+                                <div class="search-icon__wrapper search-btn__mobile">
+                                    <button type="submit" name="submit" class="search-btn">
+                                        найти
                                     </button>
                                 </div>
                             </form>
@@ -48,14 +53,29 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="search_blur" id="search_blur"></div>
-                        </li>
+                        </div>
+                        <div class="search_blur" id="search_blur"></div>
+                        <a class="search-icon-mobile">
+                            <div class="search-icon__wrapper">
+                                <button type="submit" name="submit" class="search-icon search-icon_mobile">
+                                    <img src="../static/img/search-mobile.svg" alt="searchErr">
+                                </button>
+                            </div>
+                        </a>
                         <nav class="authorization">
                             <div class="authorization__tool">
                                 {% if current_user.is_authenticated %}
-                                <a href="/profile" class="profile-link profile_dropdown" data-dropdown-toggle="dropdownInformation">
+                                <a href="/profile" class="profile-link profile_dsc">
                                     <div class="user-info">
-                                        <div class="user">{{ current_user.surname }} {{ current_user.name }}</div>
+                                        <div class="user">
+                                            <span class="user_name">
+                                                {{ current_user.surname }}
+                                            </span>
+                                             
+                                            <span class="user_surname">
+                                                {{ current_user.name }}
+                                            </span>
+                                        </div>
                                         <div class="status">
                                             {% if current_user.status == 'Студент' %}
                                             <div class="group user_status">
@@ -78,6 +98,55 @@
                                     </div>
                                 </a>
     
+                                <div class="profile-link profile_dropdown profile_mobile">
+                                    <div class="profile-preview">
+                                        <div class="user-info">
+                                            <div class="user">
+                                                <span class="user_name">
+                                                    {{ current_user.surname }}
+                                                </span>
+                                                
+                                                <span class="user_surname">
+                                                    {{ current_user.name }}
+                                                </span>
+                                            </div>
+                                            <div class="status">
+                                                {% if current_user.status == 'Студент' %}
+                                                <div class="group user_status">
+                                                    {{ current_user.student[0].group }}
+                                                </div>
+                                                {% else %}
+                                                <div class="status__value user_status">
+                                                    Преподаватель
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            
+                                        </div>
+                                        <div class="avatar">
+                                            {% if current_user.avatar %}
+                                            <img src="../static/img/{{ current_user.avatar }}" alt="avatarErr">
+                                            {% else %}
+                                            <img src="../static/img/avatar.png" alt="avatarErr">
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="main-tools">
+                                        <ul class="tools__items items">
+                                            {% if current_user.is_authenticated %}
+                                            <li class="item"><a class="btn" href="/profile">Профиль</a></li>
+                                            <li class="item"><a class="btn" href="/">Темы</a></li>
+                                            <li class="item"><a class="btn" href="/answers_my">Мои ответы</a></li>
+                                            {% endif %}
+                                            {% if current_user.is_authenticated and current_user.status == 'Преподаватель' %}
+                                            <li class="item"><a class="btn" href="/topic">Новая тема</a></li>
+                                            <li class="item"><a class="btn" href="/answers_check">На проверке</a></li>
+                                            <li class="item"><a class="btn" href="/users_list">Пользователи</a></li>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                    <div class="field_free" id="field_free"></div>
+                                </div>
     
                                 {% else %}
                                 <div class="register-buttons">
